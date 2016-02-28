@@ -6,3 +6,7 @@ q
 jpa setup --database HYPERSONIC_PERSISTENT --provider HIBERNATE 
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-02-28 21:25:05
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-02-28 21:30:44
+entity jpa --class ~.model.Course 
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-02-28 21:34:18
