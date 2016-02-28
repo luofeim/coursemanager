@@ -3,7 +3,10 @@
 
 package org.rooinaction.coursemanager.model;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import org.rooinaction.coursemanager.model.Course;
+import org.rooinaction.coursemanager.model.CourseTypeEnum;
 
 privileged aspect Course_Roo_JavaBean {
     
@@ -13,6 +16,46 @@ privileged aspect Course_Roo_JavaBean {
     
     public void Course.setName(String name) {
         this.name = name;
+    }
+    
+    public String Course.getDescription() {
+        return this.description;
+    }
+    
+    public void Course.setDescription(String description) {
+        this.description = description;
+    }
+    
+    public BigDecimal Course.getListPrice() {
+        return this.listPrice;
+    }
+    
+    public void Course.setListPrice(BigDecimal listPrice) {
+        this.listPrice = listPrice;
+    }
+    
+    public Integer Course.getMaximumCapacity() {
+        return this.maximumCapacity;
+    }
+    
+    public void Course.setMaximumCapacity(Integer maximumCapacity) {
+        this.maximumCapacity = maximumCapacity;
+    }
+    
+    public Date Course.getRunDate() {
+        return this.runDate;
+    }
+    
+    public void Course.setRunDate(Date runDate) {
+        this.runDate = runDate;
+    }
+    
+    public CourseTypeEnum Course.getCourseType() {
+        return this.courseType;
+    }
+    
+    public void Course.setCourseType(CourseTypeEnum courseType) {
+        this.courseType = courseType;
     }
     
 }
