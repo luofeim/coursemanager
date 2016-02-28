@@ -30,3 +30,8 @@ entity jpa --class ~.model.TrainingProgram
 field string --fieldName name
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-02-28 22:29:01
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-02-28 22:34:17
+focus --class ~.model.TrainingProgram
+field set --fieldName courses --type ~.model.Course --cardinality ONE_TO_MANY --mappedBy trainingProgram
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-02-28 22:46:24

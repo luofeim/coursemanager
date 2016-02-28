@@ -3,6 +3,8 @@
 
 package org.rooinaction.coursemanager.model;
 
+import java.util.Set;
+import org.rooinaction.coursemanager.model.Course;
 import org.rooinaction.coursemanager.model.TrainingProgram;
 
 privileged aspect TrainingProgram_Roo_JavaBean {
@@ -13,6 +15,14 @@ privileged aspect TrainingProgram_Roo_JavaBean {
     
     public void TrainingProgram.setName(String name) {
         this.name = name;
+    }
+    
+    public Set<Course> TrainingProgram.getCourses() {
+        return this.courses;
+    }
+    
+    public void TrainingProgram.setCourses(Set<Course> courses) {
+        this.courses = courses;
     }
     
 }

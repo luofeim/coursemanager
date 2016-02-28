@@ -14,7 +14,7 @@ privileged aspect TrainingProgram_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager TrainingProgram.entityManager;
     
-    public static final List<String> TrainingProgram.fieldNames4OrderClauseFilter = java.util.Arrays.asList("name");
+    public static final List<String> TrainingProgram.fieldNames4OrderClauseFilter = java.util.Arrays.asList("name", "courses");
     
     public static final EntityManager TrainingProgram.entityManager() {
         EntityManager em = new TrainingProgram().entityManager;
