@@ -17,6 +17,11 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.ManyToMany;
 
 @RooJavaBean
 @RooToString
@@ -62,4 +67,14 @@ public class Course {
     @NotNull
     @Enumerated(EnumType.STRING)
     private CourseTypeEnum courseType;
+
+    /**
+     */
+    @ManyToOne
+    private TrainingProgram trainingProgram;
+
+    /**
+     */
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "courses")
+    private Set<Tag> tags = new HashSet<Tag>();
 }

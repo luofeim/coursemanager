@@ -35,3 +35,14 @@ focus --class ~.model.TrainingProgram
 field set --fieldName courses --type ~.model.Course --cardinality ONE_TO_MANY --mappedBy trainingProgram
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-02-28 22:46:24
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-02-28 22:49:44
+focus --class ~.model.Course
+field reference --fieldName trainingProgram --type ~.model.TrainingProgram --cardinality MANY_TO_ONE
+entity jpa --class ~.model.Tag
+field string --fieldName tagName --sizeMin 1 --sizeMax 25 --notNull
+field string --fieldName description --sizeMax 250 --notNull
+field set --fieldName courses --type ~.model.Course --cardinality MANY_TO_MANY
+focus --class ~.model.Course
+field set --fieldName tags --type ~.model.Tag --cardinality MANY_TO_MANY --mappedBy courses
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-02-28 23:08:59

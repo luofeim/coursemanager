@@ -5,8 +5,11 @@ package org.rooinaction.coursemanager.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Set;
 import org.rooinaction.coursemanager.model.Course;
 import org.rooinaction.coursemanager.model.CourseTypeEnum;
+import org.rooinaction.coursemanager.model.Tag;
+import org.rooinaction.coursemanager.model.TrainingProgram;
 
 privileged aspect Course_Roo_JavaBean {
     
@@ -56,6 +59,22 @@ privileged aspect Course_Roo_JavaBean {
     
     public void Course.setCourseType(CourseTypeEnum courseType) {
         this.courseType = courseType;
+    }
+    
+    public TrainingProgram Course.getTrainingProgram() {
+        return this.trainingProgram;
+    }
+    
+    public void Course.setTrainingProgram(TrainingProgram trainingProgram) {
+        this.trainingProgram = trainingProgram;
+    }
+    
+    public Set<Tag> Course.getTags() {
+        return this.tags;
+    }
+    
+    public void Course.setTags(Set<Tag> tags) {
+        this.tags = tags;
     }
     
 }
