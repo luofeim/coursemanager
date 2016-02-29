@@ -80,3 +80,12 @@ q
 test integration --entity ~.model.Course --transactional 
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-02-29 16:23:15
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-02-29 22:31:57
+test integration --entity ~.model.TrainingProgram 
+test integration --entity ~.model.Tag
+test integration --entity ~.model.Student
+test integration --entity ~.model.Instructor
+test integration --entity ~.model.Offering
+test integration --entity ~.model.Registration
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-02-29 22:34:17
