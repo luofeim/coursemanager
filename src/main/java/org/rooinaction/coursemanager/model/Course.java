@@ -25,7 +25,7 @@ import javax.persistence.ManyToMany;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord
+@RooJpaActiveRecord(finders = { "findCoursesByNameLike" })
 public class Course {
 
     /**
