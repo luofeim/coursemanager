@@ -89,3 +89,6 @@ test integration --entity ~.model.Offering
 test integration --entity ~.model.Registration
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-02-29 22:34:17
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-01 10:31:26
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-01 10:31:39
