@@ -22,10 +22,12 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ManyToMany;
+import org.springframework.roo.addon.json.annotations.RooJson;
 
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord(finders = { "findCoursesByNameLike", "findCoursesByCourseTypeAndRunDateBetween" })
+@RooJson
 public class Course {
 
     /**

@@ -107,3 +107,7 @@ finder list --depth 2 --filter type
 finder add --finderName findCoursesByCourseTypeAndRunDateBetween
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-01 10:45:55
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-01 10:46:55
+json add --class ~.model.Course 
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-01 10:51:23
