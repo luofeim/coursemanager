@@ -10,3 +10,8 @@ q
 entity jpa --class ~.model.Course --activeRecord false
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-02 10:12:20
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-02 10:15:47
+focus --class ~.model.Course
+field string --fieldName name --sizeMin 1 --sizeMax 60 --column course_name
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-02 10:21:43
