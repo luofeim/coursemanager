@@ -9,10 +9,12 @@ import javax.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.Size;
 import javax.persistence.ManyToOne;
+import org.springframework.roo.addon.json.annotations.RooJson;
 
 @RooJavaBean
 @RooToString
 @RooJpaEntity
+@RooJson
 public class Offering {
 
     /**

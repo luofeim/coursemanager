@@ -4,10 +4,12 @@ import org.springframework.roo.addon.javabean.annotations.RooToString;
 import org.springframework.roo.addon.jpa.annotations.entity.RooJpaEntity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.springframework.roo.addon.json.annotations.RooJson;
 
 @RooJavaBean
 @RooToString
 @RooJpaEntity
+@RooJson
 public class Student extends Person {
 
     /**

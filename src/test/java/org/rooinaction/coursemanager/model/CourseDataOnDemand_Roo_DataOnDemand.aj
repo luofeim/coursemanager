@@ -18,7 +18,7 @@ import org.rooinaction.coursemanager.db.CourseRepository;
 import org.rooinaction.coursemanager.model.Course;
 import org.rooinaction.coursemanager.model.CourseDataOnDemand;
 import org.rooinaction.coursemanager.model.CourseTypeEnum;
-import org.rooinaction.coursemanager.model.TrainingProgram;
+import org.rooinaction.coursemanager.model.TrainingProgramDataOnDemand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +31,9 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
     private List<Course> CourseDataOnDemand.data;
     
     @Autowired
+    TrainingProgramDataOnDemand CourseDataOnDemand.trainingProgramDataOnDemand;
+    
+    @Autowired
     CourseRepository CourseDataOnDemand.courseRepository;
     
     public Course CourseDataOnDemand.getNewTransientCourse(int index) {
@@ -41,7 +44,6 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
         setMaximumCapacity(obj, index);
         setName(obj, index);
         setRunDate(obj, index);
-        setTrainingProgram(obj, index);
         return obj;
     }
     
@@ -85,11 +87,6 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
     public void CourseDataOnDemand.setRunDate(Course obj, int index) {
         Date runDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setRunDate(runDate);
-    }
-    
-    public void CourseDataOnDemand.setTrainingProgram(Course obj, int index) {
-        TrainingProgram trainingProgram = null;
-        obj.setTrainingProgram(trainingProgram);
     }
     
     public Course CourseDataOnDemand.getSpecificCourse(int index) {

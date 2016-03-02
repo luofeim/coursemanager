@@ -6,10 +6,12 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
+import org.springframework.roo.addon.json.annotations.RooJson;
 
 @RooJavaBean
 @RooToString
 @RooJpaEntity
+@RooJson
 public class TrainingProgram {
 
     /**
