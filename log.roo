@@ -119,3 +119,7 @@ q
 web mvc all --package ~.web 
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-02 15:13:25
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-02 15:20:45
+web mvc json all --package ~.json
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-02 15:22:05
