@@ -18,10 +18,11 @@ privileged aspect Person_Roo_JavaBean {
     public String Person.getMiddleNameOrInitial() {
         return this.middleNameOrInitial;
     }
+    
     public void Person.setMiddleNameOrInitial(String middleNameOrInitial) {
         this.middleNameOrInitial = middleNameOrInitial;
     }
-
+    
     public String Person.getAddressLine1() {
         return this.addressLine1;
     }

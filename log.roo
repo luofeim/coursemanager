@@ -68,3 +68,7 @@ field boolean --fieldName paymentMade
 field boolean --fieldName attended
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-02 10:39:57
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-02 10:53:19
+repository jpa --entity ~.model.Course --interface ~.db.CourseRepository
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-02 11:05:05
