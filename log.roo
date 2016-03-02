@@ -72,3 +72,12 @@ q
 repository jpa --entity ~.model.Course --interface ~.db.CourseRepository
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-02 11:05:05
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-02 11:06:33
+repository jpa --entity ~.model.TrainingProgram --interface ~.db.TrainingProgramRepository
+repository jpa --entity ~.model.Tag --interface ~.db.TagRepository
+repository jpa --entity ~.model.Student --interface ~.db.StudentRepository
+repository jpa --entity ~.model.Instructor --interface ~.db.InstructorRepository
+repository jpa --entity ~.model.Offering --interface ~.db.OfferingRepository
+repository jpa --entity ~.model.Registration --interface ~.db.RegistrationRepository
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-02 11:09:54
