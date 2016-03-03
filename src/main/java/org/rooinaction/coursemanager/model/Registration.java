@@ -26,4 +26,9 @@ public class Registration {
     /**
      */
     private Boolean attended;
+
+    /**
+     */
+    @ManyToOne
+    private Offering offering;
 }

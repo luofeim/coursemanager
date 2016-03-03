@@ -97,3 +97,11 @@ q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-03 12:51:50
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-03 12:51:58
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-03 13:00:40
+focus --class ~.model.Registration
+field reference --type ~.model.Offering --fieldName offering --cardinality MANY_TO_ONE 
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-03 13:02:45
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-03 13:03:04
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-03 13:03:13
