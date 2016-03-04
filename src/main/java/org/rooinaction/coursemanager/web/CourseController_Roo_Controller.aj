@@ -7,11 +7,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.rooinaction.coursemanager.db.CourseRepository;
 import org.rooinaction.coursemanager.model.Course;
 import org.rooinaction.coursemanager.model.CourseTypeEnum;
 import org.rooinaction.coursemanager.model.Tag;
 import org.rooinaction.coursemanager.model.TrainingProgram;
 import org.rooinaction.coursemanager.web.CourseController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,9 @@ import org.springframework.web.util.WebUtils;
 
 privileged aspect CourseController_Roo_Controller {
     
+    @Autowired
+    CourseRepository CourseController.courseRepository;
+    
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String CourseController.create(@Valid Course course, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
@@ -30,7 +35,7 @@ privileged aspect CourseController_Roo_Controller {
             return "courses/create";
         }
         uiModel.asMap().clear();
-        course.persist();
+        courseRepository.save(course);
         return "redirect:/courses/" + encodeUrlPathSegment(course.getId().toString(), httpServletRequest);
     }
     
@@ -43,7 +48,7 @@ privileged aspect CourseController_Roo_Controller {
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String CourseController.show(@PathVariable("id") Long id, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
-        uiModel.addAttribute("course", Course.findCourse(id));
+        uiModel.addAttribute("course", courseRepository.findOne(id));
         uiModel.addAttribute("itemId", id);
         return "courses/show";
     }
@@ -54,7 +59,7 @@ privileged aspect CourseController_Roo_Controller {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
             uiModel.addAttribute("courses", Course.findCourseEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) Course.countCourses() / sizeNo;
+            float nrOfPages = (float) courseRepository.count() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
             uiModel.addAttribute("courses", Course.findAllCourses(sortFieldName, sortOrder));
@@ -70,20 +75,20 @@ privileged aspect CourseController_Roo_Controller {
             return "courses/update";
         }
         uiModel.asMap().clear();
-        course.merge();
+        courseRepository.save(course);
         return "redirect:/courses/" + encodeUrlPathSegment(course.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String CourseController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, Course.findCourse(id));
+        populateEditForm(uiModel, courseRepository.findOne(id));
         return "courses/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String CourseController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Course course = Course.findCourse(id);
-        course.remove();
+        Course course = courseRepository.findOne(id);
+        courseRepository.delete(course);
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());

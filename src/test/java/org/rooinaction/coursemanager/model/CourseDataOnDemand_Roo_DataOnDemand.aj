@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Random;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import org.rooinaction.coursemanager.db.CourseRepository;
 import org.rooinaction.coursemanager.model.Course;
 import org.rooinaction.coursemanager.model.CourseDataOnDemand;
 import org.rooinaction.coursemanager.model.CourseTypeEnum;
@@ -31,6 +32,9 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
     
     @Autowired
     TrainingProgramDataOnDemand CourseDataOnDemand.trainingProgramDataOnDemand;
+    
+    @Autowired
+    CourseRepository CourseDataOnDemand.courseRepository;
     
     public Course CourseDataOnDemand.getNewTransientCourse(int index) {
         Course obj = new Course();
@@ -95,14 +99,14 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
         }
         Course obj = data.get(index);
         Long id = obj.getId();
-        return Course.findCourse(id);
+        return courseRepository.findOne(id);
     }
     
     public Course CourseDataOnDemand.getRandomCourse() {
         init();
         Course obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
-        return Course.findCourse(id);
+        return courseRepository.findOne(id);
     }
     
     public boolean CourseDataOnDemand.modifyCourse(Course obj) {
@@ -112,7 +116,7 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
     public void CourseDataOnDemand.init() {
         int from = 0;
         int to = 10;
-        data = Course.findCourseEntries(from, to);
+        data = courseRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Course' illegally returned null");
         }
@@ -124,7 +128,7 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
         for (int i = 0; i < 10; i++) {
             Course obj = getNewTransientCourse(i);
             try {
-                obj.persist();
+                courseRepository.save(obj);
             } catch (final ConstraintViolationException e) {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
@@ -133,7 +137,7 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }
-            obj.flush();
+            courseRepository.flush();
             data.add(obj);
         }
     }

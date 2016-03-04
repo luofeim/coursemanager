@@ -10,7 +10,7 @@ import javax.validation.ConstraintViolationException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.rooinaction.coursemanager.model.Course;
+import org.rooinaction.coursemanager.db.CourseRepository;
 import org.rooinaction.coursemanager.model.CourseDataOnDemand;
 import org.rooinaction.coursemanager.model.CourseIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,42 +29,45 @@ privileged aspect CourseIntegrationTest_Roo_IntegrationTest {
     @Autowired
     CourseDataOnDemand CourseIntegrationTest.dod;
     
+    @Autowired
+    CourseRepository CourseIntegrationTest.courseRepository;
+    
     @Test
-    public void CourseIntegrationTest.testCountCourses() {
+    public void CourseIntegrationTest.testCount() {
         Assert.assertNotNull("Data on demand for 'Course' failed to initialize correctly", dod.getRandomCourse());
-        long count = Course.countCourses();
+        long count = courseRepository.count();
         Assert.assertTrue("Counter for 'Course' incorrectly reported there were no entries", count > 0);
     }
     
     @Test
-    public void CourseIntegrationTest.testFindCourse() {
+    public void CourseIntegrationTest.testFind() {
         Course obj = dod.getRandomCourse();
         Assert.assertNotNull("Data on demand for 'Course' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Course' failed to provide an identifier", id);
-        obj = Course.findCourse(id);
+        obj = courseRepository.findOne(id);
         Assert.assertNotNull("Find method for 'Course' illegally returned null for id '" + id + "'", obj);
         Assert.assertEquals("Find method for 'Course' returned the incorrect identifier", id, obj.getId());
     }
     
     @Test
-    public void CourseIntegrationTest.testFindAllCourses() {
+    public void CourseIntegrationTest.testFindAll() {
         Assert.assertNotNull("Data on demand for 'Course' failed to initialize correctly", dod.getRandomCourse());
-        long count = Course.countCourses();
+        long count = courseRepository.count();
         Assert.assertTrue("Too expensive to perform a find all test for 'Course', as there are " + count + " entries; set the findAllMaximum to exceed this value or set findAll=false on the integration test annotation to disable the test", count < 250);
-        List<Course> result = Course.findAllCourses();
+        List<Course> result = courseRepository.findAll();
         Assert.assertNotNull("Find all method for 'Course' illegally returned null", result);
         Assert.assertTrue("Find all method for 'Course' failed to return any data", result.size() > 0);
     }
     
     @Test
-    public void CourseIntegrationTest.testFindCourseEntries() {
+    public void CourseIntegrationTest.testFindEntries() {
         Assert.assertNotNull("Data on demand for 'Course' failed to initialize correctly", dod.getRandomCourse());
-        long count = Course.countCourses();
+        long count = courseRepository.count();
         if (count > 20) count = 20;
         int firstResult = 0;
         int maxResults = (int) count;
-        List<Course> result = Course.findCourseEntries(firstResult, maxResults);
+        List<Course> result = courseRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
         Assert.assertNotNull("Find entries method for 'Course' illegally returned null", result);
         Assert.assertEquals("Find entries method for 'Course' returned an incorrect number of entries", count, result.size());
     }
@@ -75,37 +78,37 @@ privileged aspect CourseIntegrationTest_Roo_IntegrationTest {
         Assert.assertNotNull("Data on demand for 'Course' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Course' failed to provide an identifier", id);
-        obj = Course.findCourse(id);
+        obj = courseRepository.findOne(id);
         Assert.assertNotNull("Find method for 'Course' illegally returned null for id '" + id + "'", obj);
         boolean modified =  dod.modifyCourse(obj);
         Integer currentVersion = obj.getVersion();
-        obj.flush();
+        courseRepository.flush();
         Assert.assertTrue("Version for 'Course' failed to increment on flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
     
     @Test
-    public void CourseIntegrationTest.testMergeUpdate() {
+    public void CourseIntegrationTest.testSaveUpdate() {
         Course obj = dod.getRandomCourse();
         Assert.assertNotNull("Data on demand for 'Course' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Course' failed to provide an identifier", id);
-        obj = Course.findCourse(id);
+        obj = courseRepository.findOne(id);
         boolean modified =  dod.modifyCourse(obj);
         Integer currentVersion = obj.getVersion();
-        Course merged = obj.merge();
-        obj.flush();
+        Course merged = courseRepository.save(obj);
+        courseRepository.flush();
         Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(), id);
         Assert.assertTrue("Version for 'Course' failed to increment on merge and flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
     
     @Test
-    public void CourseIntegrationTest.testPersist() {
+    public void CourseIntegrationTest.testSave() {
         Assert.assertNotNull("Data on demand for 'Course' failed to initialize correctly", dod.getRandomCourse());
         Course obj = dod.getNewTransientCourse(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'Course' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'Course' identifier to be null", obj.getId());
         try {
-            obj.persist();
+            courseRepository.save(obj);
         } catch (final ConstraintViolationException e) {
             final StringBuilder msg = new StringBuilder();
             for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
@@ -114,20 +117,20 @@ privileged aspect CourseIntegrationTest_Roo_IntegrationTest {
             }
             throw new IllegalStateException(msg.toString(), e);
         }
-        obj.flush();
+        courseRepository.flush();
         Assert.assertNotNull("Expected 'Course' identifier to no longer be null", obj.getId());
     }
     
     @Test
-    public void CourseIntegrationTest.testRemove() {
+    public void CourseIntegrationTest.testDelete() {
         Course obj = dod.getRandomCourse();
         Assert.assertNotNull("Data on demand for 'Course' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Course' failed to provide an identifier", id);
-        obj = Course.findCourse(id);
-        obj.remove();
-        obj.flush();
-        Assert.assertNull("Failed to remove 'Course' with identifier '" + id + "'", Course.findCourse(id));
+        obj = courseRepository.findOne(id);
+        courseRepository.delete(obj);
+        courseRepository.flush();
+        Assert.assertNull("Failed to remove 'Course' with identifier '" + id + "'", courseRepository.findOne(id));
     }
     
 }

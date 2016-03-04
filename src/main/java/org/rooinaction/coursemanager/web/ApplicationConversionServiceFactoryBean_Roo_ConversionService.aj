@@ -3,6 +3,7 @@
 
 package org.rooinaction.coursemanager.web;
 
+import org.rooinaction.coursemanager.db.CourseRepository;
 import org.rooinaction.coursemanager.model.Course;
 import org.rooinaction.coursemanager.model.Instructor;
 import org.rooinaction.coursemanager.model.Offering;
@@ -11,6 +12,7 @@ import org.rooinaction.coursemanager.model.Student;
 import org.rooinaction.coursemanager.model.Tag;
 import org.rooinaction.coursemanager.model.TrainingProgram;
 import org.rooinaction.coursemanager.web.ApplicationConversionServiceFactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
@@ -18,6 +20,9 @@ import org.springframework.format.FormatterRegistry;
 privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService {
     
     declare @type: ApplicationConversionServiceFactoryBean: @Configurable;
+    
+    @Autowired
+    CourseRepository ApplicationConversionServiceFactoryBean.courseRepository;
     
     public Converter<Course, String> ApplicationConversionServiceFactoryBean.getCourseToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<org.rooinaction.coursemanager.model.Course, java.lang.String>() {
@@ -30,7 +35,7 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<Long, Course> ApplicationConversionServiceFactoryBean.getIdToCourseConverter() {
         return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.rooinaction.coursemanager.model.Course>() {
             public org.rooinaction.coursemanager.model.Course convert(java.lang.Long id) {
-                return Course.findCourse(id);
+                return courseRepository.findOne(id);
             }
         };
     }

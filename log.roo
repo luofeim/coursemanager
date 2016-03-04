@@ -121,3 +121,7 @@ web mvc finder all
 web mvc json all --package ~.json 
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-01 23:23:24
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-04 10:17:00
+repository jpa --entity ~.model.Course --interface ~.db.CourseRepository 
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-04 10:33:21
