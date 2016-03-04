@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Random;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import org.rooinaction.coursemanager.db.TagRepository;
 import org.rooinaction.coursemanager.model.Tag;
 import org.rooinaction.coursemanager.model.TagDataOnDemand;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 privileged aspect TagDataOnDemand_Roo_DataOnDemand {
@@ -21,6 +23,9 @@ privileged aspect TagDataOnDemand_Roo_DataOnDemand {
     private Random TagDataOnDemand.rnd = new SecureRandom();
     
     private List<Tag> TagDataOnDemand.data;
+    
+    @Autowired
+    TagRepository TagDataOnDemand.tagRepository;
     
     public Tag TagDataOnDemand.getNewTransientTag(int index) {
         Tag obj = new Tag();
@@ -55,14 +60,14 @@ privileged aspect TagDataOnDemand_Roo_DataOnDemand {
         }
         Tag obj = data.get(index);
         Long id = obj.getId();
-        return Tag.findTag(id);
+        return tagRepository.findOne(id);
     }
     
     public Tag TagDataOnDemand.getRandomTag() {
         init();
         Tag obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
-        return Tag.findTag(id);
+        return tagRepository.findOne(id);
     }
     
     public boolean TagDataOnDemand.modifyTag(Tag obj) {
@@ -72,7 +77,7 @@ privileged aspect TagDataOnDemand_Roo_DataOnDemand {
     public void TagDataOnDemand.init() {
         int from = 0;
         int to = 10;
-        data = Tag.findTagEntries(from, to);
+        data = tagRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Tag' illegally returned null");
         }
@@ -84,7 +89,7 @@ privileged aspect TagDataOnDemand_Roo_DataOnDemand {
         for (int i = 0; i < 10; i++) {
             Tag obj = getNewTransientTag(i);
             try {
-                obj.persist();
+                tagRepository.save(obj);
             } catch (final ConstraintViolationException e) {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
@@ -93,7 +98,7 @@ privileged aspect TagDataOnDemand_Roo_DataOnDemand {
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }
-            obj.flush();
+            tagRepository.flush();
             data.add(obj);
         }
     }

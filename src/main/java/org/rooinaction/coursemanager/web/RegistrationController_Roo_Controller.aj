@@ -6,10 +6,12 @@ package org.rooinaction.coursemanager.web;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.model.Course;
+import org.rooinaction.coursemanager.db.CourseRepository;
+import org.rooinaction.coursemanager.db.RegistrationRepository;
+import org.rooinaction.coursemanager.db.StudentRepository;
 import org.rooinaction.coursemanager.model.Registration;
-import org.rooinaction.coursemanager.model.Student;
 import org.rooinaction.coursemanager.web.RegistrationController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,15 @@ import org.springframework.web.util.WebUtils;
 
 privileged aspect RegistrationController_Roo_Controller {
     
+    @Autowired
+    RegistrationRepository RegistrationController.registrationRepository;
+    
+    @Autowired
+    CourseRepository RegistrationController.courseRepository;
+    
+    @Autowired
+    StudentRepository RegistrationController.studentRepository;
+    
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String RegistrationController.create(@Valid Registration registration, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
@@ -28,7 +39,7 @@ privileged aspect RegistrationController_Roo_Controller {
             return "registrations/create";
         }
         uiModel.asMap().clear();
-        registration.persist();
+        registrationRepository.save(registration);
         return "redirect:/registrations/" + encodeUrlPathSegment(registration.getId().toString(), httpServletRequest);
     }
     
@@ -40,7 +51,7 @@ privileged aspect RegistrationController_Roo_Controller {
     
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String RegistrationController.show(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("registration", Registration.findRegistration(id));
+        uiModel.addAttribute("registration", registrationRepository.findOne(id));
         uiModel.addAttribute("itemId", id);
         return "registrations/show";
     }
@@ -51,7 +62,7 @@ privileged aspect RegistrationController_Roo_Controller {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
             uiModel.addAttribute("registrations", Registration.findRegistrationEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) Registration.countRegistrations() / sizeNo;
+            float nrOfPages = (float) registrationRepository.count() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
             uiModel.addAttribute("registrations", Registration.findAllRegistrations(sortFieldName, sortOrder));
@@ -66,20 +77,20 @@ privileged aspect RegistrationController_Roo_Controller {
             return "registrations/update";
         }
         uiModel.asMap().clear();
-        registration.merge();
+        registrationRepository.save(registration);
         return "redirect:/registrations/" + encodeUrlPathSegment(registration.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String RegistrationController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, Registration.findRegistration(id));
+        populateEditForm(uiModel, registrationRepository.findOne(id));
         return "registrations/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String RegistrationController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Registration registration = Registration.findRegistration(id);
-        registration.remove();
+        Registration registration = registrationRepository.findOne(id);
+        registrationRepository.delete(registration);
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
@@ -88,8 +99,8 @@ privileged aspect RegistrationController_Roo_Controller {
     
     void RegistrationController.populateEditForm(Model uiModel, Registration registration) {
         uiModel.addAttribute("registration", registration);
-        uiModel.addAttribute("courses", Course.findAllCourses());
-        uiModel.addAttribute("students", Student.findAllStudents());
+        uiModel.addAttribute("courses", courseRepository.findAll());
+        uiModel.addAttribute("students", studentRepository.findAll());
     }
     
     String RegistrationController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

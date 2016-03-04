@@ -6,9 +6,11 @@ package org.rooinaction.coursemanager.web;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.model.Course;
+import org.rooinaction.coursemanager.db.CourseRepository;
+import org.rooinaction.coursemanager.db.TrainingProgramRepository;
 import org.rooinaction.coursemanager.model.TrainingProgram;
 import org.rooinaction.coursemanager.web.TrainingProgramController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,12 @@ import org.springframework.web.util.WebUtils;
 
 privileged aspect TrainingProgramController_Roo_Controller {
     
+    @Autowired
+    TrainingProgramRepository TrainingProgramController.trainingProgramRepository;
+    
+    @Autowired
+    CourseRepository TrainingProgramController.courseRepository;
+    
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String TrainingProgramController.create(@Valid TrainingProgram trainingProgram, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
@@ -27,7 +35,7 @@ privileged aspect TrainingProgramController_Roo_Controller {
             return "trainingprograms/create";
         }
         uiModel.asMap().clear();
-        trainingProgram.persist();
+        trainingProgramRepository.save(trainingProgram);
         return "redirect:/trainingprograms/" + encodeUrlPathSegment(trainingProgram.getId().toString(), httpServletRequest);
     }
     
@@ -39,7 +47,7 @@ privileged aspect TrainingProgramController_Roo_Controller {
     
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String TrainingProgramController.show(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("trainingprogram", TrainingProgram.findTrainingProgram(id));
+        uiModel.addAttribute("trainingprogram", trainingProgramRepository.findOne(id));
         uiModel.addAttribute("itemId", id);
         return "trainingprograms/show";
     }
@@ -50,7 +58,7 @@ privileged aspect TrainingProgramController_Roo_Controller {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
             uiModel.addAttribute("trainingprograms", TrainingProgram.findTrainingProgramEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) TrainingProgram.countTrainingPrograms() / sizeNo;
+            float nrOfPages = (float) trainingProgramRepository.count() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
             uiModel.addAttribute("trainingprograms", TrainingProgram.findAllTrainingPrograms(sortFieldName, sortOrder));
@@ -65,20 +73,20 @@ privileged aspect TrainingProgramController_Roo_Controller {
             return "trainingprograms/update";
         }
         uiModel.asMap().clear();
-        trainingProgram.merge();
+        trainingProgramRepository.save(trainingProgram);
         return "redirect:/trainingprograms/" + encodeUrlPathSegment(trainingProgram.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String TrainingProgramController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, TrainingProgram.findTrainingProgram(id));
+        populateEditForm(uiModel, trainingProgramRepository.findOne(id));
         return "trainingprograms/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String TrainingProgramController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        TrainingProgram trainingProgram = TrainingProgram.findTrainingProgram(id);
-        trainingProgram.remove();
+        TrainingProgram trainingProgram = trainingProgramRepository.findOne(id);
+        trainingProgramRepository.delete(trainingProgram);
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
@@ -87,7 +95,7 @@ privileged aspect TrainingProgramController_Roo_Controller {
     
     void TrainingProgramController.populateEditForm(Model uiModel, TrainingProgram trainingProgram) {
         uiModel.addAttribute("trainingProgram", trainingProgram);
-        uiModel.addAttribute("courses", Course.findAllCourses());
+        uiModel.addAttribute("courses", courseRepository.findAll());
     }
     
     String TrainingProgramController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Random;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import org.rooinaction.coursemanager.db.InstructorRepository;
 import org.rooinaction.coursemanager.model.Instructor;
 import org.rooinaction.coursemanager.model.InstructorDataOnDemand;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 privileged aspect InstructorDataOnDemand_Roo_DataOnDemand {
@@ -21,6 +23,9 @@ privileged aspect InstructorDataOnDemand_Roo_DataOnDemand {
     private Random InstructorDataOnDemand.rnd = new SecureRandom();
     
     private List<Instructor> InstructorDataOnDemand.data;
+    
+    @Autowired
+    InstructorRepository InstructorDataOnDemand.instructorRepository;
     
     public Instructor InstructorDataOnDemand.getNewTransientInstructor(int index) {
         Instructor obj = new Instructor();
@@ -124,14 +129,14 @@ privileged aspect InstructorDataOnDemand_Roo_DataOnDemand {
         }
         Instructor obj = data.get(index);
         Long id = obj.getId();
-        return Instructor.findInstructor(id);
+        return instructorRepository.findOne(id);
     }
     
     public Instructor InstructorDataOnDemand.getRandomInstructor() {
         init();
         Instructor obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
-        return Instructor.findInstructor(id);
+        return instructorRepository.findOne(id);
     }
     
     public boolean InstructorDataOnDemand.modifyInstructor(Instructor obj) {
@@ -141,7 +146,7 @@ privileged aspect InstructorDataOnDemand_Roo_DataOnDemand {
     public void InstructorDataOnDemand.init() {
         int from = 0;
         int to = 10;
-        data = Instructor.findInstructorEntries(from, to);
+        data = instructorRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Instructor' illegally returned null");
         }
@@ -153,7 +158,7 @@ privileged aspect InstructorDataOnDemand_Roo_DataOnDemand {
         for (int i = 0; i < 10; i++) {
             Instructor obj = getNewTransientInstructor(i);
             try {
-                obj.persist();
+                instructorRepository.save(obj);
             } catch (final ConstraintViolationException e) {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
@@ -162,7 +167,7 @@ privileged aspect InstructorDataOnDemand_Roo_DataOnDemand {
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }
-            obj.flush();
+            instructorRepository.flush();
             data.add(obj);
         }
     }

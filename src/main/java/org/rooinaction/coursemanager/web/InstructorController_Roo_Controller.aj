@@ -6,8 +6,10 @@ package org.rooinaction.coursemanager.web;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.rooinaction.coursemanager.db.InstructorRepository;
 import org.rooinaction.coursemanager.model.Instructor;
 import org.rooinaction.coursemanager.web.InstructorController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +21,9 @@ import org.springframework.web.util.WebUtils;
 
 privileged aspect InstructorController_Roo_Controller {
     
+    @Autowired
+    InstructorRepository InstructorController.instructorRepository;
+    
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String InstructorController.create(@Valid Instructor instructor, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
@@ -26,7 +31,7 @@ privileged aspect InstructorController_Roo_Controller {
             return "instructors/create";
         }
         uiModel.asMap().clear();
-        instructor.persist();
+        instructorRepository.save(instructor);
         return "redirect:/instructors/" + encodeUrlPathSegment(instructor.getId().toString(), httpServletRequest);
     }
     
@@ -38,7 +43,7 @@ privileged aspect InstructorController_Roo_Controller {
     
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String InstructorController.show(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("instructor", Instructor.findInstructor(id));
+        uiModel.addAttribute("instructor", instructorRepository.findOne(id));
         uiModel.addAttribute("itemId", id);
         return "instructors/show";
     }
@@ -49,7 +54,7 @@ privileged aspect InstructorController_Roo_Controller {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
             uiModel.addAttribute("instructors", Instructor.findInstructorEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) Instructor.countInstructors() / sizeNo;
+            float nrOfPages = (float) instructorRepository.count() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
             uiModel.addAttribute("instructors", Instructor.findAllInstructors(sortFieldName, sortOrder));
@@ -64,20 +69,20 @@ privileged aspect InstructorController_Roo_Controller {
             return "instructors/update";
         }
         uiModel.asMap().clear();
-        instructor.merge();
+        instructorRepository.save(instructor);
         return "redirect:/instructors/" + encodeUrlPathSegment(instructor.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String InstructorController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, Instructor.findInstructor(id));
+        populateEditForm(uiModel, instructorRepository.findOne(id));
         return "instructors/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String InstructorController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Instructor instructor = Instructor.findInstructor(id);
-        instructor.remove();
+        Instructor instructor = instructorRepository.findOne(id);
+        instructorRepository.delete(instructor);
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());

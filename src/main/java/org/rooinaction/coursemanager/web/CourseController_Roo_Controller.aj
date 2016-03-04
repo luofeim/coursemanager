@@ -8,10 +8,10 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.rooinaction.coursemanager.db.CourseRepository;
+import org.rooinaction.coursemanager.db.TagRepository;
+import org.rooinaction.coursemanager.db.TrainingProgramRepository;
 import org.rooinaction.coursemanager.model.Course;
 import org.rooinaction.coursemanager.model.CourseTypeEnum;
-import org.rooinaction.coursemanager.model.Tag;
-import org.rooinaction.coursemanager.model.TrainingProgram;
 import org.rooinaction.coursemanager.web.CourseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -27,6 +27,12 @@ privileged aspect CourseController_Roo_Controller {
     
     @Autowired
     CourseRepository CourseController.courseRepository;
+    
+    @Autowired
+    TagRepository CourseController.tagRepository;
+    
+    @Autowired
+    TrainingProgramRepository CourseController.trainingProgramRepository;
     
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String CourseController.create(@Valid Course course, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
@@ -103,8 +109,8 @@ privileged aspect CourseController_Roo_Controller {
         uiModel.addAttribute("course", course);
         addDateTimeFormatPatterns(uiModel);
         uiModel.addAttribute("coursetypeenums", Arrays.asList(CourseTypeEnum.values()));
-        uiModel.addAttribute("tags", Tag.findAllTags());
-        uiModel.addAttribute("trainingprograms", TrainingProgram.findAllTrainingPrograms());
+        uiModel.addAttribute("tags", tagRepository.findAll());
+        uiModel.addAttribute("trainingprograms", trainingProgramRepository.findAll());
     }
     
     String CourseController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Random;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import org.rooinaction.coursemanager.db.OfferingRepository;
 import org.rooinaction.coursemanager.model.CourseDataOnDemand;
 import org.rooinaction.coursemanager.model.InstructorDataOnDemand;
 import org.rooinaction.coursemanager.model.Offering;
@@ -33,6 +34,9 @@ privileged aspect OfferingDataOnDemand_Roo_DataOnDemand {
     
     @Autowired
     InstructorDataOnDemand OfferingDataOnDemand.instructorDataOnDemand;
+    
+    @Autowired
+    OfferingRepository OfferingDataOnDemand.offeringRepository;
     
     public Offering OfferingDataOnDemand.getNewTransientOffering(int index) {
         Offering obj = new Offering();
@@ -64,14 +68,14 @@ privileged aspect OfferingDataOnDemand_Roo_DataOnDemand {
         }
         Offering obj = data.get(index);
         Long id = obj.getId();
-        return Offering.findOffering(id);
+        return offeringRepository.findOne(id);
     }
     
     public Offering OfferingDataOnDemand.getRandomOffering() {
         init();
         Offering obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
-        return Offering.findOffering(id);
+        return offeringRepository.findOne(id);
     }
     
     public boolean OfferingDataOnDemand.modifyOffering(Offering obj) {
@@ -81,7 +85,7 @@ privileged aspect OfferingDataOnDemand_Roo_DataOnDemand {
     public void OfferingDataOnDemand.init() {
         int from = 0;
         int to = 10;
-        data = Offering.findOfferingEntries(from, to);
+        data = offeringRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Offering' illegally returned null");
         }
@@ -93,7 +97,7 @@ privileged aspect OfferingDataOnDemand_Roo_DataOnDemand {
         for (int i = 0; i < 10; i++) {
             Offering obj = getNewTransientOffering(i);
             try {
-                obj.persist();
+                offeringRepository.save(obj);
             } catch (final ConstraintViolationException e) {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
@@ -102,7 +106,7 @@ privileged aspect OfferingDataOnDemand_Roo_DataOnDemand {
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }
-            obj.flush();
+            offeringRepository.flush();
             data.add(obj);
         }
     }

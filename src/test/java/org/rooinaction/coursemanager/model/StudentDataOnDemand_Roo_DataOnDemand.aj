@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Random;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import org.rooinaction.coursemanager.db.StudentRepository;
 import org.rooinaction.coursemanager.model.Student;
 import org.rooinaction.coursemanager.model.StudentDataOnDemand;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 privileged aspect StudentDataOnDemand_Roo_DataOnDemand {
@@ -21,6 +23,9 @@ privileged aspect StudentDataOnDemand_Roo_DataOnDemand {
     private Random StudentDataOnDemand.rnd = new SecureRandom();
     
     private List<Student> StudentDataOnDemand.data;
+    
+    @Autowired
+    StudentRepository StudentDataOnDemand.studentRepository;
     
     public Student StudentDataOnDemand.getNewTransientStudent(int index) {
         Student obj = new Student();
@@ -136,14 +141,14 @@ privileged aspect StudentDataOnDemand_Roo_DataOnDemand {
         }
         Student obj = data.get(index);
         Long id = obj.getId();
-        return Student.findStudent(id);
+        return studentRepository.findOne(id);
     }
     
     public Student StudentDataOnDemand.getRandomStudent() {
         init();
         Student obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
-        return Student.findStudent(id);
+        return studentRepository.findOne(id);
     }
     
     public boolean StudentDataOnDemand.modifyStudent(Student obj) {
@@ -153,7 +158,7 @@ privileged aspect StudentDataOnDemand_Roo_DataOnDemand {
     public void StudentDataOnDemand.init() {
         int from = 0;
         int to = 10;
-        data = Student.findStudentEntries(from, to);
+        data = studentRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Student' illegally returned null");
         }
@@ -165,7 +170,7 @@ privileged aspect StudentDataOnDemand_Roo_DataOnDemand {
         for (int i = 0; i < 10; i++) {
             Student obj = getNewTransientStudent(i);
             try {
-                obj.persist();
+                studentRepository.save(obj);
             } catch (final ConstraintViolationException e) {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
@@ -174,7 +179,7 @@ privileged aspect StudentDataOnDemand_Roo_DataOnDemand {
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }
-            obj.flush();
+            studentRepository.flush();
             data.add(obj);
         }
     }
