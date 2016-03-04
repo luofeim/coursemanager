@@ -7,11 +7,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.db.CourseRepository;
 import org.rooinaction.coursemanager.db.TagRepository;
 import org.rooinaction.coursemanager.db.TrainingProgramRepository;
 import org.rooinaction.coursemanager.model.Course;
 import org.rooinaction.coursemanager.model.CourseTypeEnum;
+import org.rooinaction.coursemanager.service.CourseService;
 import org.rooinaction.coursemanager.web.CourseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -26,7 +26,7 @@ import org.springframework.web.util.WebUtils;
 privileged aspect CourseController_Roo_Controller {
     
     @Autowired
-    CourseRepository CourseController.courseRepository;
+    CourseService CourseController.courseService;
     
     @Autowired
     TagRepository CourseController.tagRepository;
@@ -41,7 +41,7 @@ privileged aspect CourseController_Roo_Controller {
             return "courses/create";
         }
         uiModel.asMap().clear();
-        courseRepository.save(course);
+        courseService.saveCourse(course);
         return "redirect:/courses/" + encodeUrlPathSegment(course.getId().toString(), httpServletRequest);
     }
     
@@ -54,7 +54,7 @@ privileged aspect CourseController_Roo_Controller {
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String CourseController.show(@PathVariable("id") Long id, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
-        uiModel.addAttribute("course", courseRepository.findOne(id));
+        uiModel.addAttribute("course", courseService.findCourse(id));
         uiModel.addAttribute("itemId", id);
         return "courses/show";
     }
@@ -65,7 +65,7 @@ privileged aspect CourseController_Roo_Controller {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
             uiModel.addAttribute("courses", Course.findCourseEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) courseRepository.count() / sizeNo;
+            float nrOfPages = (float) courseService.countAllCourses() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
             uiModel.addAttribute("courses", Course.findAllCourses(sortFieldName, sortOrder));
@@ -81,20 +81,20 @@ privileged aspect CourseController_Roo_Controller {
             return "courses/update";
         }
         uiModel.asMap().clear();
-        courseRepository.save(course);
+        courseService.updateCourse(course);
         return "redirect:/courses/" + encodeUrlPathSegment(course.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String CourseController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, courseRepository.findOne(id));
+        populateEditForm(uiModel, courseService.findCourse(id));
         return "courses/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String CourseController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Course course = courseRepository.findOne(id);
-        courseRepository.delete(course);
+        Course course = courseService.findCourse(id);
+        courseService.deleteCourse(course);
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());

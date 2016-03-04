@@ -6,9 +6,9 @@ package org.rooinaction.coursemanager.web;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.db.CourseRepository;
 import org.rooinaction.coursemanager.db.TagRepository;
 import org.rooinaction.coursemanager.model.Tag;
+import org.rooinaction.coursemanager.service.CourseService;
 import org.rooinaction.coursemanager.web.TagController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -26,7 +26,7 @@ privileged aspect TagController_Roo_Controller {
     TagRepository TagController.tagRepository;
     
     @Autowired
-    CourseRepository TagController.courseRepository;
+    CourseService TagController.courseService;
     
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String TagController.create(@Valid Tag tag, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
@@ -95,7 +95,7 @@ privileged aspect TagController_Roo_Controller {
     
     void TagController.populateEditForm(Model uiModel, Tag tag) {
         uiModel.addAttribute("tag", tag);
-        uiModel.addAttribute("courses", courseRepository.findAll());
+        uiModel.addAttribute("courses", courseService.findAllCourses());
     }
     
     String TagController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

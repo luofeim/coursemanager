@@ -19,6 +19,7 @@ import org.rooinaction.coursemanager.model.Course;
 import org.rooinaction.coursemanager.model.CourseDataOnDemand;
 import org.rooinaction.coursemanager.model.CourseTypeEnum;
 import org.rooinaction.coursemanager.model.TrainingProgramDataOnDemand;
+import org.rooinaction.coursemanager.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,9 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
     
     @Autowired
     TrainingProgramDataOnDemand CourseDataOnDemand.trainingProgramDataOnDemand;
+    
+    @Autowired
+    CourseService CourseDataOnDemand.courseService;
     
     @Autowired
     CourseRepository CourseDataOnDemand.courseRepository;
@@ -99,14 +103,14 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
         }
         Course obj = data.get(index);
         Long id = obj.getId();
-        return courseRepository.findOne(id);
+        return courseService.findCourse(id);
     }
     
     public Course CourseDataOnDemand.getRandomCourse() {
         init();
         Course obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
-        return courseRepository.findOne(id);
+        return courseService.findCourse(id);
     }
     
     public boolean CourseDataOnDemand.modifyCourse(Course obj) {
@@ -116,7 +120,7 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
     public void CourseDataOnDemand.init() {
         int from = 0;
         int to = 10;
-        data = courseRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
+        data = courseService.findCourseEntries(from, to);
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Course' illegally returned null");
         }
@@ -128,7 +132,7 @@ privileged aspect CourseDataOnDemand_Roo_DataOnDemand {
         for (int i = 0; i < 10; i++) {
             Course obj = getNewTransientCourse(i);
             try {
-                courseRepository.save(obj);
+                courseService.saveCourse(obj);
             } catch (final ConstraintViolationException e) {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {

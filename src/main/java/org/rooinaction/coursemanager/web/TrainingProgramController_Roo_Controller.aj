@@ -6,9 +6,9 @@ package org.rooinaction.coursemanager.web;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.db.CourseRepository;
 import org.rooinaction.coursemanager.db.TrainingProgramRepository;
 import org.rooinaction.coursemanager.model.TrainingProgram;
+import org.rooinaction.coursemanager.service.CourseService;
 import org.rooinaction.coursemanager.web.TrainingProgramController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -26,7 +26,7 @@ privileged aspect TrainingProgramController_Roo_Controller {
     TrainingProgramRepository TrainingProgramController.trainingProgramRepository;
     
     @Autowired
-    CourseRepository TrainingProgramController.courseRepository;
+    CourseService TrainingProgramController.courseService;
     
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String TrainingProgramController.create(@Valid TrainingProgram trainingProgram, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
@@ -95,7 +95,7 @@ privileged aspect TrainingProgramController_Roo_Controller {
     
     void TrainingProgramController.populateEditForm(Model uiModel, TrainingProgram trainingProgram) {
         uiModel.addAttribute("trainingProgram", trainingProgram);
-        uiModel.addAttribute("courses", courseRepository.findAll());
+        uiModel.addAttribute("courses", courseService.findAllCourses());
     }
     
     String TrainingProgramController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

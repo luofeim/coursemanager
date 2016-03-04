@@ -28,7 +28,7 @@ privileged aspect CourseController_Roo_Controller_Json {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         try {
-            Course course = courseRepository.findOne(id);
+            Course course = courseService.findCourse(id);
             if (course == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
@@ -44,7 +44,7 @@ privileged aspect CourseController_Roo_Controller_Json {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         try {
-            List<Course> result = courseRepository.findAll();
+            List<Course> result = courseService.findAllCourses();
             return new ResponseEntity<String>(Course.toJsonArray(result), headers, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -57,7 +57,7 @@ privileged aspect CourseController_Roo_Controller_Json {
         headers.add("Content-Type", "application/json");
         try {
             Course course = Course.fromJsonToCourse(json);
-            courseRepository.save(course);
+            courseService.saveCourse(course);
             RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
             headers.add("Location",uriBuilder.path(a.value()[0]+"/"+course.getId().toString()).build().toUriString());
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -72,7 +72,7 @@ privileged aspect CourseController_Roo_Controller_Json {
         headers.add("Content-Type", "application/json");
         try {
             for (Course course: Course.fromJsonArrayToCourses(json)) {
-                courseRepository.save(course);
+                courseService.saveCourse(course);
             }
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -87,7 +87,7 @@ privileged aspect CourseController_Roo_Controller_Json {
         try {
             Course course = Course.fromJsonToCourse(json);
             course.setId(id);
-            if (courseRepository.save(course) == null) {
+            if (courseService.updateCourse(course) == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<String>(headers, HttpStatus.OK);
@@ -101,11 +101,11 @@ privileged aspect CourseController_Roo_Controller_Json {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
-            Course course = courseRepository.findOne(id);
+            Course course = courseService.findCourse(id);
             if (course == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
-            courseRepository.delete(course);
+            courseService.deleteCourse(course);
             return new ResponseEntity<String>(headers, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);

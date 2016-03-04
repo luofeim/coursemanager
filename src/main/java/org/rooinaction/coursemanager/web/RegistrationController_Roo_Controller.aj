@@ -6,10 +6,10 @@ package org.rooinaction.coursemanager.web;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.db.CourseRepository;
 import org.rooinaction.coursemanager.db.RegistrationRepository;
 import org.rooinaction.coursemanager.db.StudentRepository;
 import org.rooinaction.coursemanager.model.Registration;
+import org.rooinaction.coursemanager.service.CourseService;
 import org.rooinaction.coursemanager.web.RegistrationController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -27,7 +27,7 @@ privileged aspect RegistrationController_Roo_Controller {
     RegistrationRepository RegistrationController.registrationRepository;
     
     @Autowired
-    CourseRepository RegistrationController.courseRepository;
+    CourseService RegistrationController.courseService;
     
     @Autowired
     StudentRepository RegistrationController.studentRepository;
@@ -99,7 +99,7 @@ privileged aspect RegistrationController_Roo_Controller {
     
     void RegistrationController.populateEditForm(Model uiModel, Registration registration) {
         uiModel.addAttribute("registration", registration);
-        uiModel.addAttribute("courses", courseRepository.findAll());
+        uiModel.addAttribute("courses", courseService.findAllCourses());
         uiModel.addAttribute("students", studentRepository.findAll());
     }
     
