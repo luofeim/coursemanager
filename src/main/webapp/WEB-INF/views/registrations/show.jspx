@@ -7,5 +7,6 @@
         <field:display field="course" id="s_org_rooinaction_coursemanager_model_Registration_course" object="${registration}" z="jb8AmL89Iocr5VOXQoQiS7Z4/44="/>
         <field:display field="paymentMade" id="s_org_rooinaction_coursemanager_model_Registration_paymentMade" object="${registration}" z="sF3CtU3IFaUAnccJitTNMocPDrA="/>
         <field:display field="attended" id="s_org_rooinaction_coursemanager_model_Registration_attended" object="${registration}" z="13b9auiQp4rZIPBMYwHzFJqgpX0="/>
+        <field:display field="offering" id="s_org_rooinaction_coursemanager_model_Registration_offering" object="${registration}" z="r8p4K161ebTBZ8znqhAN8wD35gU="/>
     </page:show>
 </div>

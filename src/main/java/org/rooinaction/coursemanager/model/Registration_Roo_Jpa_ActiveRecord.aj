@@ -14,7 +14,7 @@ privileged aspect Registration_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager Registration.entityManager;
     
-    public static final List<String> Registration.fieldNames4OrderClauseFilter = java.util.Arrays.asList("student", "course", "paymentMade", "attended");
+    public static final List<String> Registration.fieldNames4OrderClauseFilter = java.util.Arrays.asList("student", "course", "paymentMade", "attended", "offering");
     
     public static final EntityManager Registration.entityManager() {
         EntityManager em = new Registration().entityManager;

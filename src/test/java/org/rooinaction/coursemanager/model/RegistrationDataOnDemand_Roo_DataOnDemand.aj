@@ -12,6 +12,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import org.rooinaction.coursemanager.db.RegistrationRepository;
 import org.rooinaction.coursemanager.model.CourseDataOnDemand;
+import org.rooinaction.coursemanager.model.OfferingDataOnDemand;
 import org.rooinaction.coursemanager.model.Registration;
 import org.rooinaction.coursemanager.model.RegistrationDataOnDemand;
 import org.rooinaction.coursemanager.model.StudentDataOnDemand;
@@ -29,6 +30,9 @@ privileged aspect RegistrationDataOnDemand_Roo_DataOnDemand {
     
     @Autowired
     CourseDataOnDemand RegistrationDataOnDemand.courseDataOnDemand;
+    
+    @Autowired
+    OfferingDataOnDemand RegistrationDataOnDemand.offeringDataOnDemand;
     
     @Autowired
     StudentDataOnDemand RegistrationDataOnDemand.studentDataOnDemand;

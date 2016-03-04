@@ -8,6 +8,7 @@
             <table:column id="c_org_rooinaction_coursemanager_model_Registration_course" property="course" z="qKBEhQoyzm4JH0ErYGlezLc/sUY="/>
             <table:column id="c_org_rooinaction_coursemanager_model_Registration_paymentMade" property="paymentMade" z="jpv/6tlPBbEZSiNQ1G/5ntd7mLk="/>
             <table:column id="c_org_rooinaction_coursemanager_model_Registration_attended" property="attended" z="7NcVGnzfGVJON/yBkuEWfL6Bc1Y="/>
+            <table:column id="c_org_rooinaction_coursemanager_model_Registration_offering" property="offering" z="k4uQPoEhG6ALu7DOnxSY/CryzSk="/>
         </table:table>
     </page:list>
 </div>

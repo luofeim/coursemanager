@@ -4,6 +4,7 @@
 package org.rooinaction.coursemanager.model;
 
 import org.rooinaction.coursemanager.model.Course;
+import org.rooinaction.coursemanager.model.Offering;
 import org.rooinaction.coursemanager.model.Registration;
 import org.rooinaction.coursemanager.model.Student;
 
@@ -39,6 +40,14 @@ privileged aspect Registration_Roo_JavaBean {
     
     public void Registration.setAttended(Boolean attended) {
         this.attended = attended;
+    }
+    
+    public Offering Registration.getOffering() {
+        return this.offering;
+    }
+    
+    public void Registration.setOffering(Offering offering) {
+        this.offering = offering;
     }
     
 }

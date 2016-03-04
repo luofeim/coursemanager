@@ -7,6 +7,7 @@
         <field:select field="course" id="c_org_rooinaction_coursemanager_model_Registration_course" itemValue="id" items="${courses}" path="/courses" z="WnamzYyT+Gr4AKF973xt7SDzF2o="/>
         <field:checkbox field="paymentMade" id="c_org_rooinaction_coursemanager_model_Registration_paymentMade" z="FQcb1Hm24yW1Vmt8tWi+dAkOs5Q="/>
         <field:checkbox field="attended" id="c_org_rooinaction_coursemanager_model_Registration_attended" z="ZhMVZ0ZRp/CY/IGGniV0NmHGvnI="/>
+        <field:select field="offering" id="c_org_rooinaction_coursemanager_model_Registration_offering" itemValue="id" items="${offerings}" path="/offerings" z="9/MyCIuDTLbOnBq/nHPPDXufjFA="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_org_rooinaction_coursemanager_model_Registration" render="${not empty dependencies}" z="EDoTGbQKj4BCy58iAKbB4fSqGQI="/>
 </div>

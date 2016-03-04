@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.rooinaction.coursemanager.model.Registration;
 import org.rooinaction.coursemanager.service.CourseService;
+import org.rooinaction.coursemanager.service.OfferingService;
 import org.rooinaction.coursemanager.service.RegistrationService;
 import org.rooinaction.coursemanager.service.StudentService;
 import org.rooinaction.coursemanager.web.RegistrationController;
@@ -28,6 +29,9 @@ privileged aspect RegistrationController_Roo_Controller {
     
     @Autowired
     CourseService RegistrationController.courseService;
+    
+    @Autowired
+    OfferingService RegistrationController.offeringService;
     
     @Autowired
     StudentService RegistrationController.studentService;
@@ -100,6 +104,7 @@ privileged aspect RegistrationController_Roo_Controller {
     void RegistrationController.populateEditForm(Model uiModel, Registration registration) {
         uiModel.addAttribute("registration", registration);
         uiModel.addAttribute("courses", courseService.findAllCourses());
+        uiModel.addAttribute("offerings", offeringService.findAllOfferings());
         uiModel.addAttribute("students", studentService.findAllStudents());
     }
     
