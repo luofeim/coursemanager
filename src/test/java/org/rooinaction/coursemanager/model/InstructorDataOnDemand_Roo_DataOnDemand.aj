@@ -13,6 +13,7 @@ import javax.validation.ConstraintViolationException;
 import org.rooinaction.coursemanager.db.InstructorRepository;
 import org.rooinaction.coursemanager.model.Instructor;
 import org.rooinaction.coursemanager.model.InstructorDataOnDemand;
+import org.rooinaction.coursemanager.service.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,9 @@ privileged aspect InstructorDataOnDemand_Roo_DataOnDemand {
     private Random InstructorDataOnDemand.rnd = new SecureRandom();
     
     private List<Instructor> InstructorDataOnDemand.data;
+    
+    @Autowired
+    InstructorService InstructorDataOnDemand.instructorService;
     
     @Autowired
     InstructorRepository InstructorDataOnDemand.instructorRepository;
@@ -129,14 +133,14 @@ privileged aspect InstructorDataOnDemand_Roo_DataOnDemand {
         }
         Instructor obj = data.get(index);
         Long id = obj.getId();
-        return instructorRepository.findOne(id);
+        return instructorService.findInstructor(id);
     }
     
     public Instructor InstructorDataOnDemand.getRandomInstructor() {
         init();
         Instructor obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
-        return instructorRepository.findOne(id);
+        return instructorService.findInstructor(id);
     }
     
     public boolean InstructorDataOnDemand.modifyInstructor(Instructor obj) {
@@ -146,7 +150,7 @@ privileged aspect InstructorDataOnDemand_Roo_DataOnDemand {
     public void InstructorDataOnDemand.init() {
         int from = 0;
         int to = 10;
-        data = instructorRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
+        data = instructorService.findInstructorEntries(from, to);
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Instructor' illegally returned null");
         }
@@ -158,7 +162,7 @@ privileged aspect InstructorDataOnDemand_Roo_DataOnDemand {
         for (int i = 0; i < 10; i++) {
             Instructor obj = getNewTransientInstructor(i);
             try {
-                instructorRepository.save(obj);
+                instructorService.saveInstructor(obj);
             } catch (final ConstraintViolationException e) {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {

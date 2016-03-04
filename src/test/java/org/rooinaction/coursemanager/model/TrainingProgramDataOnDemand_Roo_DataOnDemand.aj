@@ -13,6 +13,7 @@ import javax.validation.ConstraintViolationException;
 import org.rooinaction.coursemanager.db.TrainingProgramRepository;
 import org.rooinaction.coursemanager.model.TrainingProgram;
 import org.rooinaction.coursemanager.model.TrainingProgramDataOnDemand;
+import org.rooinaction.coursemanager.service.TrainingProgramService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,9 @@ privileged aspect TrainingProgramDataOnDemand_Roo_DataOnDemand {
     private Random TrainingProgramDataOnDemand.rnd = new SecureRandom();
     
     private List<TrainingProgram> TrainingProgramDataOnDemand.data;
+    
+    @Autowired
+    TrainingProgramService TrainingProgramDataOnDemand.trainingProgramService;
     
     @Autowired
     TrainingProgramRepository TrainingProgramDataOnDemand.trainingProgramRepository;
@@ -48,14 +52,14 @@ privileged aspect TrainingProgramDataOnDemand_Roo_DataOnDemand {
         }
         TrainingProgram obj = data.get(index);
         Long id = obj.getId();
-        return trainingProgramRepository.findOne(id);
+        return trainingProgramService.findTrainingProgram(id);
     }
     
     public TrainingProgram TrainingProgramDataOnDemand.getRandomTrainingProgram() {
         init();
         TrainingProgram obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
-        return trainingProgramRepository.findOne(id);
+        return trainingProgramService.findTrainingProgram(id);
     }
     
     public boolean TrainingProgramDataOnDemand.modifyTrainingProgram(TrainingProgram obj) {
@@ -65,7 +69,7 @@ privileged aspect TrainingProgramDataOnDemand_Roo_DataOnDemand {
     public void TrainingProgramDataOnDemand.init() {
         int from = 0;
         int to = 10;
-        data = trainingProgramRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
+        data = trainingProgramService.findTrainingProgramEntries(from, to);
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'TrainingProgram' illegally returned null");
         }
@@ -77,7 +81,7 @@ privileged aspect TrainingProgramDataOnDemand_Roo_DataOnDemand {
         for (int i = 0; i < 10; i++) {
             TrainingProgram obj = getNewTransientTrainingProgram(i);
             try {
-                trainingProgramRepository.save(obj);
+                trainingProgramService.saveTrainingProgram(obj);
             } catch (final ConstraintViolationException e) {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {

@@ -6,9 +6,9 @@ package org.rooinaction.coursemanager.web;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.db.TrainingProgramRepository;
 import org.rooinaction.coursemanager.model.TrainingProgram;
 import org.rooinaction.coursemanager.service.CourseService;
+import org.rooinaction.coursemanager.service.TrainingProgramService;
 import org.rooinaction.coursemanager.web.TrainingProgramController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -23,7 +23,7 @@ import org.springframework.web.util.WebUtils;
 privileged aspect TrainingProgramController_Roo_Controller {
     
     @Autowired
-    TrainingProgramRepository TrainingProgramController.trainingProgramRepository;
+    TrainingProgramService TrainingProgramController.trainingProgramService;
     
     @Autowired
     CourseService TrainingProgramController.courseService;
@@ -35,7 +35,7 @@ privileged aspect TrainingProgramController_Roo_Controller {
             return "trainingprograms/create";
         }
         uiModel.asMap().clear();
-        trainingProgramRepository.save(trainingProgram);
+        trainingProgramService.saveTrainingProgram(trainingProgram);
         return "redirect:/trainingprograms/" + encodeUrlPathSegment(trainingProgram.getId().toString(), httpServletRequest);
     }
     
@@ -47,7 +47,7 @@ privileged aspect TrainingProgramController_Roo_Controller {
     
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String TrainingProgramController.show(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("trainingprogram", trainingProgramRepository.findOne(id));
+        uiModel.addAttribute("trainingprogram", trainingProgramService.findTrainingProgram(id));
         uiModel.addAttribute("itemId", id);
         return "trainingprograms/show";
     }
@@ -58,7 +58,7 @@ privileged aspect TrainingProgramController_Roo_Controller {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
             uiModel.addAttribute("trainingprograms", TrainingProgram.findTrainingProgramEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) trainingProgramRepository.count() / sizeNo;
+            float nrOfPages = (float) trainingProgramService.countAllTrainingPrograms() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
             uiModel.addAttribute("trainingprograms", TrainingProgram.findAllTrainingPrograms(sortFieldName, sortOrder));
@@ -73,20 +73,20 @@ privileged aspect TrainingProgramController_Roo_Controller {
             return "trainingprograms/update";
         }
         uiModel.asMap().clear();
-        trainingProgramRepository.save(trainingProgram);
+        trainingProgramService.updateTrainingProgram(trainingProgram);
         return "redirect:/trainingprograms/" + encodeUrlPathSegment(trainingProgram.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String TrainingProgramController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, trainingProgramRepository.findOne(id));
+        populateEditForm(uiModel, trainingProgramService.findTrainingProgram(id));
         return "trainingprograms/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String TrainingProgramController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        TrainingProgram trainingProgram = trainingProgramRepository.findOne(id);
-        trainingProgramRepository.delete(trainingProgram);
+        TrainingProgram trainingProgram = trainingProgramService.findTrainingProgram(id);
+        trainingProgramService.deleteTrainingProgram(trainingProgram);
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());

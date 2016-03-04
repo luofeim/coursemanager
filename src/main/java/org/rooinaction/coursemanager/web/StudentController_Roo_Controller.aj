@@ -6,8 +6,8 @@ package org.rooinaction.coursemanager.web;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.db.StudentRepository;
 import org.rooinaction.coursemanager.model.Student;
+import org.rooinaction.coursemanager.service.StudentService;
 import org.rooinaction.coursemanager.web.StudentController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -22,7 +22,7 @@ import org.springframework.web.util.WebUtils;
 privileged aspect StudentController_Roo_Controller {
     
     @Autowired
-    StudentRepository StudentController.studentRepository;
+    StudentService StudentController.studentService;
     
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String StudentController.create(@Valid Student student, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
@@ -31,7 +31,7 @@ privileged aspect StudentController_Roo_Controller {
             return "students/create";
         }
         uiModel.asMap().clear();
-        studentRepository.save(student);
+        studentService.saveStudent(student);
         return "redirect:/students/" + encodeUrlPathSegment(student.getId().toString(), httpServletRequest);
     }
     
@@ -43,7 +43,7 @@ privileged aspect StudentController_Roo_Controller {
     
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String StudentController.show(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("student", studentRepository.findOne(id));
+        uiModel.addAttribute("student", studentService.findStudent(id));
         uiModel.addAttribute("itemId", id);
         return "students/show";
     }
@@ -54,7 +54,7 @@ privileged aspect StudentController_Roo_Controller {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
             uiModel.addAttribute("students", Student.findStudentEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) studentRepository.count() / sizeNo;
+            float nrOfPages = (float) studentService.countAllStudents() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
             uiModel.addAttribute("students", Student.findAllStudents(sortFieldName, sortOrder));
@@ -69,20 +69,20 @@ privileged aspect StudentController_Roo_Controller {
             return "students/update";
         }
         uiModel.asMap().clear();
-        studentRepository.save(student);
+        studentService.updateStudent(student);
         return "redirect:/students/" + encodeUrlPathSegment(student.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String StudentController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, studentRepository.findOne(id));
+        populateEditForm(uiModel, studentService.findStudent(id));
         return "students/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String StudentController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Student student = studentRepository.findOne(id);
-        studentRepository.delete(student);
+        Student student = studentService.findStudent(id);
+        studentService.deleteStudent(student);
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());

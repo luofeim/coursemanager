@@ -13,6 +13,7 @@ import javax.validation.ConstraintViolationException;
 import org.rooinaction.coursemanager.db.StudentRepository;
 import org.rooinaction.coursemanager.model.Student;
 import org.rooinaction.coursemanager.model.StudentDataOnDemand;
+import org.rooinaction.coursemanager.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,9 @@ privileged aspect StudentDataOnDemand_Roo_DataOnDemand {
     private Random StudentDataOnDemand.rnd = new SecureRandom();
     
     private List<Student> StudentDataOnDemand.data;
+    
+    @Autowired
+    StudentService StudentDataOnDemand.studentService;
     
     @Autowired
     StudentRepository StudentDataOnDemand.studentRepository;
@@ -141,14 +145,14 @@ privileged aspect StudentDataOnDemand_Roo_DataOnDemand {
         }
         Student obj = data.get(index);
         Long id = obj.getId();
-        return studentRepository.findOne(id);
+        return studentService.findStudent(id);
     }
     
     public Student StudentDataOnDemand.getRandomStudent() {
         init();
         Student obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
-        return studentRepository.findOne(id);
+        return studentService.findStudent(id);
     }
     
     public boolean StudentDataOnDemand.modifyStudent(Student obj) {
@@ -158,7 +162,7 @@ privileged aspect StudentDataOnDemand_Roo_DataOnDemand {
     public void StudentDataOnDemand.init() {
         int from = 0;
         int to = 10;
-        data = studentRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
+        data = studentService.findStudentEntries(from, to);
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Student' illegally returned null");
         }
@@ -170,7 +174,7 @@ privileged aspect StudentDataOnDemand_Roo_DataOnDemand {
         for (int i = 0; i < 10; i++) {
             Student obj = getNewTransientStudent(i);
             try {
-                studentRepository.save(obj);
+                studentService.saveStudent(obj);
             } catch (final ConstraintViolationException e) {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {

@@ -6,10 +6,10 @@ package org.rooinaction.coursemanager.web;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.db.InstructorRepository;
-import org.rooinaction.coursemanager.db.OfferingRepository;
 import org.rooinaction.coursemanager.model.Offering;
 import org.rooinaction.coursemanager.service.CourseService;
+import org.rooinaction.coursemanager.service.InstructorService;
+import org.rooinaction.coursemanager.service.OfferingService;
 import org.rooinaction.coursemanager.web.OfferingController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -24,13 +24,13 @@ import org.springframework.web.util.WebUtils;
 privileged aspect OfferingController_Roo_Controller {
     
     @Autowired
-    OfferingRepository OfferingController.offeringRepository;
+    OfferingService OfferingController.offeringService;
     
     @Autowired
     CourseService OfferingController.courseService;
     
     @Autowired
-    InstructorRepository OfferingController.instructorRepository;
+    InstructorService OfferingController.instructorService;
     
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String OfferingController.create(@Valid Offering offering, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
@@ -39,7 +39,7 @@ privileged aspect OfferingController_Roo_Controller {
             return "offerings/create";
         }
         uiModel.asMap().clear();
-        offeringRepository.save(offering);
+        offeringService.saveOffering(offering);
         return "redirect:/offerings/" + encodeUrlPathSegment(offering.getId().toString(), httpServletRequest);
     }
     
@@ -52,7 +52,7 @@ privileged aspect OfferingController_Roo_Controller {
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String OfferingController.show(@PathVariable("id") Long id, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
-        uiModel.addAttribute("offering", offeringRepository.findOne(id));
+        uiModel.addAttribute("offering", offeringService.findOffering(id));
         uiModel.addAttribute("itemId", id);
         return "offerings/show";
     }
@@ -63,7 +63,7 @@ privileged aspect OfferingController_Roo_Controller {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
             uiModel.addAttribute("offerings", Offering.findOfferingEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) offeringRepository.count() / sizeNo;
+            float nrOfPages = (float) offeringService.countAllOfferings() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
             uiModel.addAttribute("offerings", Offering.findAllOfferings(sortFieldName, sortOrder));
@@ -79,20 +79,20 @@ privileged aspect OfferingController_Roo_Controller {
             return "offerings/update";
         }
         uiModel.asMap().clear();
-        offeringRepository.save(offering);
+        offeringService.updateOffering(offering);
         return "redirect:/offerings/" + encodeUrlPathSegment(offering.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String OfferingController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, offeringRepository.findOne(id));
+        populateEditForm(uiModel, offeringService.findOffering(id));
         return "offerings/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String OfferingController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Offering offering = offeringRepository.findOne(id);
-        offeringRepository.delete(offering);
+        Offering offering = offeringService.findOffering(id);
+        offeringService.deleteOffering(offering);
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
@@ -107,7 +107,7 @@ privileged aspect OfferingController_Roo_Controller {
         uiModel.addAttribute("offering", offering);
         addDateTimeFormatPatterns(uiModel);
         uiModel.addAttribute("courses", courseService.findAllCourses());
-        uiModel.addAttribute("instructors", instructorRepository.findAll());
+        uiModel.addAttribute("instructors", instructorService.findAllInstructors());
     }
     
     String OfferingController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

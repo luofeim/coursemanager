@@ -15,6 +15,7 @@ import org.rooinaction.coursemanager.model.CourseDataOnDemand;
 import org.rooinaction.coursemanager.model.Registration;
 import org.rooinaction.coursemanager.model.RegistrationDataOnDemand;
 import org.rooinaction.coursemanager.model.StudentDataOnDemand;
+import org.rooinaction.coursemanager.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +32,9 @@ privileged aspect RegistrationDataOnDemand_Roo_DataOnDemand {
     
     @Autowired
     StudentDataOnDemand RegistrationDataOnDemand.studentDataOnDemand;
+    
+    @Autowired
+    RegistrationService RegistrationDataOnDemand.registrationService;
     
     @Autowired
     RegistrationRepository RegistrationDataOnDemand.registrationRepository;
@@ -62,14 +66,14 @@ privileged aspect RegistrationDataOnDemand_Roo_DataOnDemand {
         }
         Registration obj = data.get(index);
         Long id = obj.getId();
-        return registrationRepository.findOne(id);
+        return registrationService.findRegistration(id);
     }
     
     public Registration RegistrationDataOnDemand.getRandomRegistration() {
         init();
         Registration obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
-        return registrationRepository.findOne(id);
+        return registrationService.findRegistration(id);
     }
     
     public boolean RegistrationDataOnDemand.modifyRegistration(Registration obj) {
@@ -79,7 +83,7 @@ privileged aspect RegistrationDataOnDemand_Roo_DataOnDemand {
     public void RegistrationDataOnDemand.init() {
         int from = 0;
         int to = 10;
-        data = registrationRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
+        data = registrationService.findRegistrationEntries(from, to);
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Registration' illegally returned null");
         }
@@ -91,7 +95,7 @@ privileged aspect RegistrationDataOnDemand_Roo_DataOnDemand {
         for (int i = 0; i < 10; i++) {
             Registration obj = getNewTransientRegistration(i);
             try {
-                registrationRepository.save(obj);
+                registrationService.saveRegistration(obj);
             } catch (final ConstraintViolationException e) {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {

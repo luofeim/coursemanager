@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.rooinaction.coursemanager.db.StudentRepository;
 import org.rooinaction.coursemanager.model.StudentDataOnDemand;
 import org.rooinaction.coursemanager.model.StudentIntegrationTest;
+import org.rooinaction.coursemanager.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,44 +31,47 @@ privileged aspect StudentIntegrationTest_Roo_IntegrationTest {
     StudentDataOnDemand StudentIntegrationTest.dod;
     
     @Autowired
+    StudentService StudentIntegrationTest.studentService;
+    
+    @Autowired
     StudentRepository StudentIntegrationTest.studentRepository;
     
     @Test
-    public void StudentIntegrationTest.testCount() {
+    public void StudentIntegrationTest.testCountAllStudents() {
         Assert.assertNotNull("Data on demand for 'Student' failed to initialize correctly", dod.getRandomStudent());
-        long count = studentRepository.count();
+        long count = studentService.countAllStudents();
         Assert.assertTrue("Counter for 'Student' incorrectly reported there were no entries", count > 0);
     }
     
     @Test
-    public void StudentIntegrationTest.testFind() {
+    public void StudentIntegrationTest.testFindStudent() {
         Student obj = dod.getRandomStudent();
         Assert.assertNotNull("Data on demand for 'Student' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Student' failed to provide an identifier", id);
-        obj = studentRepository.findOne(id);
+        obj = studentService.findStudent(id);
         Assert.assertNotNull("Find method for 'Student' illegally returned null for id '" + id + "'", obj);
         Assert.assertEquals("Find method for 'Student' returned the incorrect identifier", id, obj.getId());
     }
     
     @Test
-    public void StudentIntegrationTest.testFindAll() {
+    public void StudentIntegrationTest.testFindAllStudents() {
         Assert.assertNotNull("Data on demand for 'Student' failed to initialize correctly", dod.getRandomStudent());
-        long count = studentRepository.count();
+        long count = studentService.countAllStudents();
         Assert.assertTrue("Too expensive to perform a find all test for 'Student', as there are " + count + " entries; set the findAllMaximum to exceed this value or set findAll=false on the integration test annotation to disable the test", count < 250);
-        List<Student> result = studentRepository.findAll();
+        List<Student> result = studentService.findAllStudents();
         Assert.assertNotNull("Find all method for 'Student' illegally returned null", result);
         Assert.assertTrue("Find all method for 'Student' failed to return any data", result.size() > 0);
     }
     
     @Test
-    public void StudentIntegrationTest.testFindEntries() {
+    public void StudentIntegrationTest.testFindStudentEntries() {
         Assert.assertNotNull("Data on demand for 'Student' failed to initialize correctly", dod.getRandomStudent());
-        long count = studentRepository.count();
+        long count = studentService.countAllStudents();
         if (count > 20) count = 20;
         int firstResult = 0;
         int maxResults = (int) count;
-        List<Student> result = studentRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
+        List<Student> result = studentService.findStudentEntries(firstResult, maxResults);
         Assert.assertNotNull("Find entries method for 'Student' illegally returned null", result);
         Assert.assertEquals("Find entries method for 'Student' returned an incorrect number of entries", count, result.size());
     }
@@ -78,7 +82,7 @@ privileged aspect StudentIntegrationTest_Roo_IntegrationTest {
         Assert.assertNotNull("Data on demand for 'Student' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Student' failed to provide an identifier", id);
-        obj = studentRepository.findOne(id);
+        obj = studentService.findStudent(id);
         Assert.assertNotNull("Find method for 'Student' illegally returned null for id '" + id + "'", obj);
         boolean modified =  dod.modifyStudent(obj);
         Integer currentVersion = obj.getVersion();
@@ -87,28 +91,28 @@ privileged aspect StudentIntegrationTest_Roo_IntegrationTest {
     }
     
     @Test
-    public void StudentIntegrationTest.testSaveUpdate() {
+    public void StudentIntegrationTest.testUpdateStudentUpdate() {
         Student obj = dod.getRandomStudent();
         Assert.assertNotNull("Data on demand for 'Student' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Student' failed to provide an identifier", id);
-        obj = studentRepository.findOne(id);
+        obj = studentService.findStudent(id);
         boolean modified =  dod.modifyStudent(obj);
         Integer currentVersion = obj.getVersion();
-        Student merged = (Student)studentRepository.save(obj);
+        Student merged = (Student)studentService.updateStudent(obj);
         studentRepository.flush();
         Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(), id);
         Assert.assertTrue("Version for 'Student' failed to increment on merge and flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
     
     @Test
-    public void StudentIntegrationTest.testSave() {
+    public void StudentIntegrationTest.testSaveStudent() {
         Assert.assertNotNull("Data on demand for 'Student' failed to initialize correctly", dod.getRandomStudent());
         Student obj = dod.getNewTransientStudent(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'Student' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'Student' identifier to be null", obj.getId());
         try {
-            studentRepository.save(obj);
+            studentService.saveStudent(obj);
         } catch (final ConstraintViolationException e) {
             final StringBuilder msg = new StringBuilder();
             for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
@@ -122,15 +126,15 @@ privileged aspect StudentIntegrationTest_Roo_IntegrationTest {
     }
     
     @Test
-    public void StudentIntegrationTest.testDelete() {
+    public void StudentIntegrationTest.testDeleteStudent() {
         Student obj = dod.getRandomStudent();
         Assert.assertNotNull("Data on demand for 'Student' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Student' failed to provide an identifier", id);
-        obj = studentRepository.findOne(id);
-        studentRepository.delete(obj);
+        obj = studentService.findStudent(id);
+        studentService.deleteStudent(obj);
         studentRepository.flush();
-        Assert.assertNull("Failed to remove 'Student' with identifier '" + id + "'", studentRepository.findOne(id));
+        Assert.assertNull("Failed to remove 'Student' with identifier '" + id + "'", studentService.findStudent(id));
     }
     
 }

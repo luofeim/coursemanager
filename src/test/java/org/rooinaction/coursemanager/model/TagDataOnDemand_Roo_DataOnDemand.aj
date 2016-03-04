@@ -13,6 +13,7 @@ import javax.validation.ConstraintViolationException;
 import org.rooinaction.coursemanager.db.TagRepository;
 import org.rooinaction.coursemanager.model.Tag;
 import org.rooinaction.coursemanager.model.TagDataOnDemand;
+import org.rooinaction.coursemanager.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,9 @@ privileged aspect TagDataOnDemand_Roo_DataOnDemand {
     private Random TagDataOnDemand.rnd = new SecureRandom();
     
     private List<Tag> TagDataOnDemand.data;
+    
+    @Autowired
+    TagService TagDataOnDemand.tagService;
     
     @Autowired
     TagRepository TagDataOnDemand.tagRepository;
@@ -60,14 +64,14 @@ privileged aspect TagDataOnDemand_Roo_DataOnDemand {
         }
         Tag obj = data.get(index);
         Long id = obj.getId();
-        return tagRepository.findOne(id);
+        return tagService.findTag(id);
     }
     
     public Tag TagDataOnDemand.getRandomTag() {
         init();
         Tag obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
-        return tagRepository.findOne(id);
+        return tagService.findTag(id);
     }
     
     public boolean TagDataOnDemand.modifyTag(Tag obj) {
@@ -77,7 +81,7 @@ privileged aspect TagDataOnDemand_Roo_DataOnDemand {
     public void TagDataOnDemand.init() {
         int from = 0;
         int to = 10;
-        data = tagRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
+        data = tagService.findTagEntries(from, to);
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Tag' illegally returned null");
         }
@@ -89,7 +93,7 @@ privileged aspect TagDataOnDemand_Roo_DataOnDemand {
         for (int i = 0; i < 10; i++) {
             Tag obj = getNewTransientTag(i);
             try {
-                tagRepository.save(obj);
+                tagService.saveTag(obj);
             } catch (final ConstraintViolationException e) {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {

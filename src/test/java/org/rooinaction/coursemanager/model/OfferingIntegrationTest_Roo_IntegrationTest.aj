@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.rooinaction.coursemanager.db.OfferingRepository;
 import org.rooinaction.coursemanager.model.OfferingDataOnDemand;
 import org.rooinaction.coursemanager.model.OfferingIntegrationTest;
+import org.rooinaction.coursemanager.service.OfferingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,44 +31,47 @@ privileged aspect OfferingIntegrationTest_Roo_IntegrationTest {
     OfferingDataOnDemand OfferingIntegrationTest.dod;
     
     @Autowired
+    OfferingService OfferingIntegrationTest.offeringService;
+    
+    @Autowired
     OfferingRepository OfferingIntegrationTest.offeringRepository;
     
     @Test
-    public void OfferingIntegrationTest.testCount() {
+    public void OfferingIntegrationTest.testCountAllOfferings() {
         Assert.assertNotNull("Data on demand for 'Offering' failed to initialize correctly", dod.getRandomOffering());
-        long count = offeringRepository.count();
+        long count = offeringService.countAllOfferings();
         Assert.assertTrue("Counter for 'Offering' incorrectly reported there were no entries", count > 0);
     }
     
     @Test
-    public void OfferingIntegrationTest.testFind() {
+    public void OfferingIntegrationTest.testFindOffering() {
         Offering obj = dod.getRandomOffering();
         Assert.assertNotNull("Data on demand for 'Offering' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Offering' failed to provide an identifier", id);
-        obj = offeringRepository.findOne(id);
+        obj = offeringService.findOffering(id);
         Assert.assertNotNull("Find method for 'Offering' illegally returned null for id '" + id + "'", obj);
         Assert.assertEquals("Find method for 'Offering' returned the incorrect identifier", id, obj.getId());
     }
     
     @Test
-    public void OfferingIntegrationTest.testFindAll() {
+    public void OfferingIntegrationTest.testFindAllOfferings() {
         Assert.assertNotNull("Data on demand for 'Offering' failed to initialize correctly", dod.getRandomOffering());
-        long count = offeringRepository.count();
+        long count = offeringService.countAllOfferings();
         Assert.assertTrue("Too expensive to perform a find all test for 'Offering', as there are " + count + " entries; set the findAllMaximum to exceed this value or set findAll=false on the integration test annotation to disable the test", count < 250);
-        List<Offering> result = offeringRepository.findAll();
+        List<Offering> result = offeringService.findAllOfferings();
         Assert.assertNotNull("Find all method for 'Offering' illegally returned null", result);
         Assert.assertTrue("Find all method for 'Offering' failed to return any data", result.size() > 0);
     }
     
     @Test
-    public void OfferingIntegrationTest.testFindEntries() {
+    public void OfferingIntegrationTest.testFindOfferingEntries() {
         Assert.assertNotNull("Data on demand for 'Offering' failed to initialize correctly", dod.getRandomOffering());
-        long count = offeringRepository.count();
+        long count = offeringService.countAllOfferings();
         if (count > 20) count = 20;
         int firstResult = 0;
         int maxResults = (int) count;
-        List<Offering> result = offeringRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
+        List<Offering> result = offeringService.findOfferingEntries(firstResult, maxResults);
         Assert.assertNotNull("Find entries method for 'Offering' illegally returned null", result);
         Assert.assertEquals("Find entries method for 'Offering' returned an incorrect number of entries", count, result.size());
     }
@@ -78,7 +82,7 @@ privileged aspect OfferingIntegrationTest_Roo_IntegrationTest {
         Assert.assertNotNull("Data on demand for 'Offering' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Offering' failed to provide an identifier", id);
-        obj = offeringRepository.findOne(id);
+        obj = offeringService.findOffering(id);
         Assert.assertNotNull("Find method for 'Offering' illegally returned null for id '" + id + "'", obj);
         boolean modified =  dod.modifyOffering(obj);
         Integer currentVersion = obj.getVersion();
@@ -87,28 +91,28 @@ privileged aspect OfferingIntegrationTest_Roo_IntegrationTest {
     }
     
     @Test
-    public void OfferingIntegrationTest.testSaveUpdate() {
+    public void OfferingIntegrationTest.testUpdateOfferingUpdate() {
         Offering obj = dod.getRandomOffering();
         Assert.assertNotNull("Data on demand for 'Offering' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Offering' failed to provide an identifier", id);
-        obj = offeringRepository.findOne(id);
+        obj = offeringService.findOffering(id);
         boolean modified =  dod.modifyOffering(obj);
         Integer currentVersion = obj.getVersion();
-        Offering merged = offeringRepository.save(obj);
+        Offering merged = offeringService.updateOffering(obj);
         offeringRepository.flush();
         Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(), id);
         Assert.assertTrue("Version for 'Offering' failed to increment on merge and flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
     
     @Test
-    public void OfferingIntegrationTest.testSave() {
+    public void OfferingIntegrationTest.testSaveOffering() {
         Assert.assertNotNull("Data on demand for 'Offering' failed to initialize correctly", dod.getRandomOffering());
         Offering obj = dod.getNewTransientOffering(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'Offering' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'Offering' identifier to be null", obj.getId());
         try {
-            offeringRepository.save(obj);
+            offeringService.saveOffering(obj);
         } catch (final ConstraintViolationException e) {
             final StringBuilder msg = new StringBuilder();
             for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
@@ -122,15 +126,15 @@ privileged aspect OfferingIntegrationTest_Roo_IntegrationTest {
     }
     
     @Test
-    public void OfferingIntegrationTest.testDelete() {
+    public void OfferingIntegrationTest.testDeleteOffering() {
         Offering obj = dod.getRandomOffering();
         Assert.assertNotNull("Data on demand for 'Offering' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Offering' failed to provide an identifier", id);
-        obj = offeringRepository.findOne(id);
-        offeringRepository.delete(obj);
+        obj = offeringService.findOffering(id);
+        offeringService.deleteOffering(obj);
         offeringRepository.flush();
-        Assert.assertNull("Failed to remove 'Offering' with identifier '" + id + "'", offeringRepository.findOne(id));
+        Assert.assertNull("Failed to remove 'Offering' with identifier '" + id + "'", offeringService.findOffering(id));
     }
     
 }

@@ -7,11 +7,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.db.TagRepository;
-import org.rooinaction.coursemanager.db.TrainingProgramRepository;
 import org.rooinaction.coursemanager.model.Course;
 import org.rooinaction.coursemanager.model.CourseTypeEnum;
 import org.rooinaction.coursemanager.service.CourseService;
+import org.rooinaction.coursemanager.service.TagService;
+import org.rooinaction.coursemanager.service.TrainingProgramService;
 import org.rooinaction.coursemanager.web.CourseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -29,10 +29,10 @@ privileged aspect CourseController_Roo_Controller {
     CourseService CourseController.courseService;
     
     @Autowired
-    TagRepository CourseController.tagRepository;
+    TagService CourseController.tagService;
     
     @Autowired
-    TrainingProgramRepository CourseController.trainingProgramRepository;
+    TrainingProgramService CourseController.trainingProgramService;
     
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String CourseController.create(@Valid Course course, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
@@ -109,8 +109,8 @@ privileged aspect CourseController_Roo_Controller {
         uiModel.addAttribute("course", course);
         addDateTimeFormatPatterns(uiModel);
         uiModel.addAttribute("coursetypeenums", Arrays.asList(CourseTypeEnum.values()));
-        uiModel.addAttribute("tags", tagRepository.findAll());
-        uiModel.addAttribute("trainingprograms", trainingProgramRepository.findAll());
+        uiModel.addAttribute("tags", tagService.findAllTags());
+        uiModel.addAttribute("trainingprograms", trainingProgramService.findAllTrainingPrograms());
     }
     
     String CourseController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

@@ -3,12 +3,6 @@
 
 package org.rooinaction.coursemanager.web;
 
-import org.rooinaction.coursemanager.db.InstructorRepository;
-import org.rooinaction.coursemanager.db.OfferingRepository;
-import org.rooinaction.coursemanager.db.RegistrationRepository;
-import org.rooinaction.coursemanager.db.StudentRepository;
-import org.rooinaction.coursemanager.db.TagRepository;
-import org.rooinaction.coursemanager.db.TrainingProgramRepository;
 import org.rooinaction.coursemanager.model.Course;
 import org.rooinaction.coursemanager.model.Instructor;
 import org.rooinaction.coursemanager.model.Offering;
@@ -17,6 +11,12 @@ import org.rooinaction.coursemanager.model.Student;
 import org.rooinaction.coursemanager.model.Tag;
 import org.rooinaction.coursemanager.model.TrainingProgram;
 import org.rooinaction.coursemanager.service.CourseService;
+import org.rooinaction.coursemanager.service.InstructorService;
+import org.rooinaction.coursemanager.service.OfferingService;
+import org.rooinaction.coursemanager.service.RegistrationService;
+import org.rooinaction.coursemanager.service.StudentService;
+import org.rooinaction.coursemanager.service.TagService;
+import org.rooinaction.coursemanager.service.TrainingProgramService;
 import org.rooinaction.coursemanager.web.ApplicationConversionServiceFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -31,22 +31,22 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     CourseService ApplicationConversionServiceFactoryBean.courseService;
     
     @Autowired
-    InstructorRepository ApplicationConversionServiceFactoryBean.instructorRepository;
+    InstructorService ApplicationConversionServiceFactoryBean.instructorService;
     
     @Autowired
-    OfferingRepository ApplicationConversionServiceFactoryBean.offeringRepository;
+    OfferingService ApplicationConversionServiceFactoryBean.offeringService;
     
     @Autowired
-    RegistrationRepository ApplicationConversionServiceFactoryBean.registrationRepository;
+    RegistrationService ApplicationConversionServiceFactoryBean.registrationService;
     
     @Autowired
-    StudentRepository ApplicationConversionServiceFactoryBean.studentRepository;
+    StudentService ApplicationConversionServiceFactoryBean.studentService;
     
     @Autowired
-    TagRepository ApplicationConversionServiceFactoryBean.tagRepository;
+    TagService ApplicationConversionServiceFactoryBean.tagService;
     
     @Autowired
-    TrainingProgramRepository ApplicationConversionServiceFactoryBean.trainingProgramRepository;
+    TrainingProgramService ApplicationConversionServiceFactoryBean.trainingProgramService;
     
     public Converter<Course, String> ApplicationConversionServiceFactoryBean.getCourseToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<org.rooinaction.coursemanager.model.Course, java.lang.String>() {
@@ -83,7 +83,7 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<Long, Instructor> ApplicationConversionServiceFactoryBean.getIdToInstructorConverter() {
         return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.rooinaction.coursemanager.model.Instructor>() {
             public org.rooinaction.coursemanager.model.Instructor convert(java.lang.Long id) {
-                return instructorRepository.findOne(id);
+                return instructorService.findInstructor(id);
             }
         };
     }
@@ -107,7 +107,7 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<Long, Offering> ApplicationConversionServiceFactoryBean.getIdToOfferingConverter() {
         return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.rooinaction.coursemanager.model.Offering>() {
             public org.rooinaction.coursemanager.model.Offering convert(java.lang.Long id) {
-                return offeringRepository.findOne(id);
+                return offeringService.findOffering(id);
             }
         };
     }
@@ -131,7 +131,7 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<Long, Registration> ApplicationConversionServiceFactoryBean.getIdToRegistrationConverter() {
         return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.rooinaction.coursemanager.model.Registration>() {
             public org.rooinaction.coursemanager.model.Registration convert(java.lang.Long id) {
-                return registrationRepository.findOne(id);
+                return registrationService.findRegistration(id);
             }
         };
     }
@@ -155,7 +155,7 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<Long, Student> ApplicationConversionServiceFactoryBean.getIdToStudentConverter() {
         return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.rooinaction.coursemanager.model.Student>() {
             public org.rooinaction.coursemanager.model.Student convert(java.lang.Long id) {
-                return studentRepository.findOne(id);
+                return studentService.findStudent(id);
             }
         };
     }
@@ -179,7 +179,7 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<Long, Tag> ApplicationConversionServiceFactoryBean.getIdToTagConverter() {
         return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.rooinaction.coursemanager.model.Tag>() {
             public org.rooinaction.coursemanager.model.Tag convert(java.lang.Long id) {
-                return tagRepository.findOne(id);
+                return tagService.findTag(id);
             }
         };
     }
@@ -203,7 +203,7 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<Long, TrainingProgram> ApplicationConversionServiceFactoryBean.getIdToTrainingProgramConverter() {
         return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.rooinaction.coursemanager.model.TrainingProgram>() {
             public org.rooinaction.coursemanager.model.TrainingProgram convert(java.lang.Long id) {
-                return trainingProgramRepository.findOne(id);
+                return trainingProgramService.findTrainingProgram(id);
             }
         };
     }

@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.rooinaction.coursemanager.db.RegistrationRepository;
 import org.rooinaction.coursemanager.model.RegistrationDataOnDemand;
 import org.rooinaction.coursemanager.model.RegistrationIntegrationTest;
+import org.rooinaction.coursemanager.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,44 +31,47 @@ privileged aspect RegistrationIntegrationTest_Roo_IntegrationTest {
     RegistrationDataOnDemand RegistrationIntegrationTest.dod;
     
     @Autowired
+    RegistrationService RegistrationIntegrationTest.registrationService;
+    
+    @Autowired
     RegistrationRepository RegistrationIntegrationTest.registrationRepository;
     
     @Test
-    public void RegistrationIntegrationTest.testCount() {
+    public void RegistrationIntegrationTest.testCountAllRegistrations() {
         Assert.assertNotNull("Data on demand for 'Registration' failed to initialize correctly", dod.getRandomRegistration());
-        long count = registrationRepository.count();
+        long count = registrationService.countAllRegistrations();
         Assert.assertTrue("Counter for 'Registration' incorrectly reported there were no entries", count > 0);
     }
     
     @Test
-    public void RegistrationIntegrationTest.testFind() {
+    public void RegistrationIntegrationTest.testFindRegistration() {
         Registration obj = dod.getRandomRegistration();
         Assert.assertNotNull("Data on demand for 'Registration' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Registration' failed to provide an identifier", id);
-        obj = registrationRepository.findOne(id);
+        obj = registrationService.findRegistration(id);
         Assert.assertNotNull("Find method for 'Registration' illegally returned null for id '" + id + "'", obj);
         Assert.assertEquals("Find method for 'Registration' returned the incorrect identifier", id, obj.getId());
     }
     
     @Test
-    public void RegistrationIntegrationTest.testFindAll() {
+    public void RegistrationIntegrationTest.testFindAllRegistrations() {
         Assert.assertNotNull("Data on demand for 'Registration' failed to initialize correctly", dod.getRandomRegistration());
-        long count = registrationRepository.count();
+        long count = registrationService.countAllRegistrations();
         Assert.assertTrue("Too expensive to perform a find all test for 'Registration', as there are " + count + " entries; set the findAllMaximum to exceed this value or set findAll=false on the integration test annotation to disable the test", count < 250);
-        List<Registration> result = registrationRepository.findAll();
+        List<Registration> result = registrationService.findAllRegistrations();
         Assert.assertNotNull("Find all method for 'Registration' illegally returned null", result);
         Assert.assertTrue("Find all method for 'Registration' failed to return any data", result.size() > 0);
     }
     
     @Test
-    public void RegistrationIntegrationTest.testFindEntries() {
+    public void RegistrationIntegrationTest.testFindRegistrationEntries() {
         Assert.assertNotNull("Data on demand for 'Registration' failed to initialize correctly", dod.getRandomRegistration());
-        long count = registrationRepository.count();
+        long count = registrationService.countAllRegistrations();
         if (count > 20) count = 20;
         int firstResult = 0;
         int maxResults = (int) count;
-        List<Registration> result = registrationRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
+        List<Registration> result = registrationService.findRegistrationEntries(firstResult, maxResults);
         Assert.assertNotNull("Find entries method for 'Registration' illegally returned null", result);
         Assert.assertEquals("Find entries method for 'Registration' returned an incorrect number of entries", count, result.size());
     }
@@ -78,7 +82,7 @@ privileged aspect RegistrationIntegrationTest_Roo_IntegrationTest {
         Assert.assertNotNull("Data on demand for 'Registration' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Registration' failed to provide an identifier", id);
-        obj = registrationRepository.findOne(id);
+        obj = registrationService.findRegistration(id);
         Assert.assertNotNull("Find method for 'Registration' illegally returned null for id '" + id + "'", obj);
         boolean modified =  dod.modifyRegistration(obj);
         Integer currentVersion = obj.getVersion();
@@ -87,28 +91,28 @@ privileged aspect RegistrationIntegrationTest_Roo_IntegrationTest {
     }
     
     @Test
-    public void RegistrationIntegrationTest.testSaveUpdate() {
+    public void RegistrationIntegrationTest.testUpdateRegistrationUpdate() {
         Registration obj = dod.getRandomRegistration();
         Assert.assertNotNull("Data on demand for 'Registration' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Registration' failed to provide an identifier", id);
-        obj = registrationRepository.findOne(id);
+        obj = registrationService.findRegistration(id);
         boolean modified =  dod.modifyRegistration(obj);
         Integer currentVersion = obj.getVersion();
-        Registration merged = registrationRepository.save(obj);
+        Registration merged = registrationService.updateRegistration(obj);
         registrationRepository.flush();
         Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(), id);
         Assert.assertTrue("Version for 'Registration' failed to increment on merge and flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
     
     @Test
-    public void RegistrationIntegrationTest.testSave() {
+    public void RegistrationIntegrationTest.testSaveRegistration() {
         Assert.assertNotNull("Data on demand for 'Registration' failed to initialize correctly", dod.getRandomRegistration());
         Registration obj = dod.getNewTransientRegistration(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'Registration' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'Registration' identifier to be null", obj.getId());
         try {
-            registrationRepository.save(obj);
+            registrationService.saveRegistration(obj);
         } catch (final ConstraintViolationException e) {
             final StringBuilder msg = new StringBuilder();
             for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
@@ -122,15 +126,15 @@ privileged aspect RegistrationIntegrationTest_Roo_IntegrationTest {
     }
     
     @Test
-    public void RegistrationIntegrationTest.testDelete() {
+    public void RegistrationIntegrationTest.testDeleteRegistration() {
         Registration obj = dod.getRandomRegistration();
         Assert.assertNotNull("Data on demand for 'Registration' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Registration' failed to provide an identifier", id);
-        obj = registrationRepository.findOne(id);
-        registrationRepository.delete(obj);
+        obj = registrationService.findRegistration(id);
+        registrationService.deleteRegistration(obj);
         registrationRepository.flush();
-        Assert.assertNull("Failed to remove 'Registration' with identifier '" + id + "'", registrationRepository.findOne(id));
+        Assert.assertNull("Failed to remove 'Registration' with identifier '" + id + "'", registrationService.findRegistration(id));
     }
     
 }

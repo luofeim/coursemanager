@@ -6,9 +6,9 @@ package org.rooinaction.coursemanager.web;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.db.TagRepository;
 import org.rooinaction.coursemanager.model.Tag;
 import org.rooinaction.coursemanager.service.CourseService;
+import org.rooinaction.coursemanager.service.TagService;
 import org.rooinaction.coursemanager.web.TagController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -23,7 +23,7 @@ import org.springframework.web.util.WebUtils;
 privileged aspect TagController_Roo_Controller {
     
     @Autowired
-    TagRepository TagController.tagRepository;
+    TagService TagController.tagService;
     
     @Autowired
     CourseService TagController.courseService;
@@ -35,7 +35,7 @@ privileged aspect TagController_Roo_Controller {
             return "tags/create";
         }
         uiModel.asMap().clear();
-        tagRepository.save(tag);
+        tagService.saveTag(tag);
         return "redirect:/tags/" + encodeUrlPathSegment(tag.getId().toString(), httpServletRequest);
     }
     
@@ -47,7 +47,7 @@ privileged aspect TagController_Roo_Controller {
     
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String TagController.show(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("tag", tagRepository.findOne(id));
+        uiModel.addAttribute("tag", tagService.findTag(id));
         uiModel.addAttribute("itemId", id);
         return "tags/show";
     }
@@ -58,7 +58,7 @@ privileged aspect TagController_Roo_Controller {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
             uiModel.addAttribute("tags", Tag.findTagEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) tagRepository.count() / sizeNo;
+            float nrOfPages = (float) tagService.countAllTags() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
             uiModel.addAttribute("tags", Tag.findAllTags(sortFieldName, sortOrder));
@@ -73,20 +73,20 @@ privileged aspect TagController_Roo_Controller {
             return "tags/update";
         }
         uiModel.asMap().clear();
-        tagRepository.save(tag);
+        tagService.updateTag(tag);
         return "redirect:/tags/" + encodeUrlPathSegment(tag.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String TagController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, tagRepository.findOne(id));
+        populateEditForm(uiModel, tagService.findTag(id));
         return "tags/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String TagController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Tag tag = tagRepository.findOne(id);
-        tagRepository.delete(tag);
+        Tag tag = tagService.findTag(id);
+        tagService.deleteTag(tag);
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());

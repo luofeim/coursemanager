@@ -6,8 +6,8 @@ package org.rooinaction.coursemanager.web;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.rooinaction.coursemanager.db.InstructorRepository;
 import org.rooinaction.coursemanager.model.Instructor;
+import org.rooinaction.coursemanager.service.InstructorService;
 import org.rooinaction.coursemanager.web.InstructorController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -22,7 +22,7 @@ import org.springframework.web.util.WebUtils;
 privileged aspect InstructorController_Roo_Controller {
     
     @Autowired
-    InstructorRepository InstructorController.instructorRepository;
+    InstructorService InstructorController.instructorService;
     
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String InstructorController.create(@Valid Instructor instructor, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
@@ -31,7 +31,7 @@ privileged aspect InstructorController_Roo_Controller {
             return "instructors/create";
         }
         uiModel.asMap().clear();
-        instructorRepository.save(instructor);
+        instructorService.saveInstructor(instructor);
         return "redirect:/instructors/" + encodeUrlPathSegment(instructor.getId().toString(), httpServletRequest);
     }
     
@@ -43,7 +43,7 @@ privileged aspect InstructorController_Roo_Controller {
     
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String InstructorController.show(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("instructor", instructorRepository.findOne(id));
+        uiModel.addAttribute("instructor", instructorService.findInstructor(id));
         uiModel.addAttribute("itemId", id);
         return "instructors/show";
     }
@@ -54,7 +54,7 @@ privileged aspect InstructorController_Roo_Controller {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
             uiModel.addAttribute("instructors", Instructor.findInstructorEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) instructorRepository.count() / sizeNo;
+            float nrOfPages = (float) instructorService.countAllInstructors() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
             uiModel.addAttribute("instructors", Instructor.findAllInstructors(sortFieldName, sortOrder));
@@ -69,20 +69,20 @@ privileged aspect InstructorController_Roo_Controller {
             return "instructors/update";
         }
         uiModel.asMap().clear();
-        instructorRepository.save(instructor);
+        instructorService.updateInstructor(instructor);
         return "redirect:/instructors/" + encodeUrlPathSegment(instructor.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String InstructorController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, instructorRepository.findOne(id));
+        populateEditForm(uiModel, instructorService.findInstructor(id));
         return "instructors/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String InstructorController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Instructor instructor = instructorRepository.findOne(id);
-        instructorRepository.delete(instructor);
+        Instructor instructor = instructorService.findInstructor(id);
+        instructorService.deleteInstructor(instructor);
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
