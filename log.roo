@@ -165,3 +165,11 @@ jms setup --provider ACTIVEMQ_IN_MEMORY --destinationType TOPIC --destinationNam
 jms listener class --class ~.messaging.JmsCourseCatalogUpdateTopicListener --destinationType TOPIC --destinationName jms.topic.CourseCatalogUpdateAlerts
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-09 11:34:31
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-09 12:19:53
+interface --class ~.email.NotificationService
+class --class ~.email.NotificationServiceImpl --implements ~.email.NotificationService
+email sender setup --hostServer mail.kehwa.net --protocol POP3 --port 25 --username luofeim@kehwa.net --password kehwa56336272ray
+email template setup --from luofeim@kehwa.net --subject "Course Registration Confirmation"
+field email template --fieldName mailTemplate --class ~.email.NotificationServiceImpl
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-09 12:50:17

@@ -2,6 +2,8 @@ package org.rooinaction.coursemanager.web;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.junit.Test;
+import org.rooinaction.coursemanager.email.NotificationService;
 import org.rooinaction.coursemanager.model.Course;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
@@ -31,6 +33,19 @@ public class CourseController {
 	public String sendMessage(HttpServletRequest httpServletRequest) {
 		sendMessage("send hello world......");
 		return "message was sent......";
+	}
+	
+	@Autowired
+	private NotificationService notificationService;
+
+	@RequestMapping(value = "/sendEmail", method = RequestMethod.GET, produces = "text/html")
+	@ResponseBody
+	public String sendEmail(HttpServletRequest httpServletRequest) {
+		// Send e-mail notification
+		String mailTo = "908994112@qq.com";
+		String message = "Registration Successful.";
+		notificationService.sendMessage(mailTo, message);
+		return "email was sent......";
 	}
 
 }
