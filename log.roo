@@ -160,3 +160,8 @@ q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-04 11:31:06
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-04 11:31:22
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-09 11:25:24
+jms setup --provider ACTIVEMQ_IN_MEMORY --destinationType TOPIC --destinationName jms.topic.CourseCatalogUpdateAlerts
+jms listener class --class ~.messaging.JmsCourseCatalogUpdateTopicListener --destinationType TOPIC --destinationName jms.topic.CourseCatalogUpdateAlerts
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-09 11:34:31
