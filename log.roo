@@ -164,3 +164,7 @@ q
 security setup
 q
 // Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-04 11:50:46
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log opened at 2016-03-21 11:08:12
+jpa setup --provider HIBERNATE --database MYSQL --databaseName rooina --userName root --password kehwa123 
+q
+// Spring Roo 2.0.0.M1 [rev 33e5d76] log closed at 2016-03-21 11:12:06

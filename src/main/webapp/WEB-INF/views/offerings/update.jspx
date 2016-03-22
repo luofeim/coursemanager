@@ -7,5 +7,6 @@
         <field:textarea field="locationName" id="c_org_rooinaction_coursemanager_model_Offering_locationName" required="true" z="tPXIKfHKkb2/Z2pllc3c+UXiBf0="/>
         <field:select field="course" id="c_org_rooinaction_coursemanager_model_Offering_course" itemValue="id" items="${courses}" path="/courses" z="fwvbXdkVCy6aiSDNhsl8h9hdQTk="/>
         <field:select field="instructor" id="c_org_rooinaction_coursemanager_model_Offering_instructor" itemValue="id" items="${instructors}" path="/instructors" z="DexpGnWt3jeHEgRJlQHyL1GWD2U="/>
+        <field:input field="user" id="c_org_rooinaction_coursemanager_model_Offering_user" z="kEYqzoTyHrraqn4DpOzSevLDy/8="/>
     </form:update>
 </div>

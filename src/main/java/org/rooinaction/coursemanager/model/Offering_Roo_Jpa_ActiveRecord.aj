@@ -14,7 +14,7 @@ privileged aspect Offering_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager Offering.entityManager;
     
-    public static final List<String> Offering.fieldNames4OrderClauseFilter = java.util.Arrays.asList("offerDate", "locationName", "course", "instructor");
+    public static final List<String> Offering.fieldNames4OrderClauseFilter = java.util.Arrays.asList("offerDate", "locationName", "course", "instructor", "user");
     
     public static final EntityManager Offering.entityManager() {
         EntityManager em = new Offering().entityManager;

@@ -7,5 +7,6 @@
         <field:display field="locationName" id="s_org_rooinaction_coursemanager_model_Offering_locationName" object="${offering}" z="rEqie5UrJOxHII+QZ3iO490j8j8="/>
         <field:display field="course" id="s_org_rooinaction_coursemanager_model_Offering_course" object="${offering}" z="S6CXHTyUP/RrMCZ3HRx13xmz+SI="/>
         <field:display field="instructor" id="s_org_rooinaction_coursemanager_model_Offering_instructor" object="${offering}" z="a5fh8RzDd+NCz+25LvJOZqcVWbo="/>
+        <field:display field="user" id="s_org_rooinaction_coursemanager_model_Offering_user" object="${offering}" z="3yWOxe1Ib+SuP/nDQyhQlVk5/kA="/>
     </page:show>
 </div>

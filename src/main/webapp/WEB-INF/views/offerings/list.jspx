@@ -8,6 +8,7 @@
             <table:column id="c_org_rooinaction_coursemanager_model_Offering_locationName" property="locationName" z="rJwxaPSmWrUYoMIIOcCKHMZ6CZY="/>
             <table:column id="c_org_rooinaction_coursemanager_model_Offering_course" property="course" z="RcW4qrZ8XGorSQhtSwksp8IoI1E="/>
             <table:column id="c_org_rooinaction_coursemanager_model_Offering_instructor" property="instructor" z="MXPRKP3T8ATjNjJWKCnCqV51pAw="/>
+            <table:column id="c_org_rooinaction_coursemanager_model_Offering_user" property="user" z="KMwBN94HbObwx+9d9+ZhY4BdwnA="/>
         </table:table>
     </page:list>
 </div>

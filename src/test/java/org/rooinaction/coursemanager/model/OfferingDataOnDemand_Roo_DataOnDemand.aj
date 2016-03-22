@@ -18,6 +18,7 @@ import org.rooinaction.coursemanager.model.CourseDataOnDemand;
 import org.rooinaction.coursemanager.model.InstructorDataOnDemand;
 import org.rooinaction.coursemanager.model.Offering;
 import org.rooinaction.coursemanager.model.OfferingDataOnDemand;
+import org.rooinaction.coursemanager.model.User;
 import org.rooinaction.coursemanager.service.OfferingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -46,6 +47,7 @@ privileged aspect OfferingDataOnDemand_Roo_DataOnDemand {
         Offering obj = new Offering();
         setLocationName(obj, index);
         setOfferDate(obj, index);
+        setUser(obj, index);
         return obj;
     }
     
@@ -60,6 +62,11 @@ privileged aspect OfferingDataOnDemand_Roo_DataOnDemand {
     public void OfferingDataOnDemand.setOfferDate(Offering obj, int index) {
         Date offerDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setOfferDate(offerDate);
+    }
+    
+    public void OfferingDataOnDemand.setUser(Offering obj, int index) {
+        User user = null;
+        obj.setUser(user);
     }
     
     public Offering OfferingDataOnDemand.getSpecificOffering(int index) {
