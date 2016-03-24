@@ -1,6 +1,7 @@
 package org.rooinaction.coursemanager.db;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 
 import java.util.List;
 
@@ -8,11 +9,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.rooinaction.coursemanager.model.QUser;
 import org.rooinaction.coursemanager.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;  
+import org.springframework.transaction.annotation.Transactional;
+
+import com.mysema.query.types.expr.BooleanExpression;  
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:/META-INF/spring/applicationContext*.xml")
@@ -75,4 +79,20 @@ public class UserIntegrationTest {
 		
 	}
 
+	@Test
+	public void testQueryDslPredicateExecutor() {
+		user = setUser("susan", "lu", "susanlu@kehwa.net", "ROLE_ADMIN");
+		userRepository.saveAndFlush(user);
+		user = setUser("david", "luo", "davidluo@kehwa.net", "ROLE_USER");
+		userRepository.saveAndFlush(user);
+		
+		QUser qUser = QUser.user;
+		BooleanExpression be = qUser.lastname.eq("luo");
+		Iterable<User> users = userRepository.findAll(be);
+		for (User gotUser: users) {
+			System.out.println(gotUser.getFirstname() + "......" + gotUser.getLastname());
+		}
+		
+	}
+	
 }
