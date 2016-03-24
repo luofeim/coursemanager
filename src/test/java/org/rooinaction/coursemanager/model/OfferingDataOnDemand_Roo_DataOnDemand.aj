@@ -18,7 +18,6 @@ import org.rooinaction.coursemanager.model.CourseDataOnDemand;
 import org.rooinaction.coursemanager.model.InstructorDataOnDemand;
 import org.rooinaction.coursemanager.model.Offering;
 import org.rooinaction.coursemanager.model.OfferingDataOnDemand;
-import org.rooinaction.coursemanager.model.User;
 import org.rooinaction.coursemanager.service.OfferingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

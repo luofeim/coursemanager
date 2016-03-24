@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.roo.addon.layers.repository.jpa.annotations.RooJpaRepository;
 
 @RooJpaRepository(domainType = Offering.class)
-public interface OfferingRepository {
+public interface OfferingRepository extends OfferingRepositoryCustom {
 //	List<Offering> findByUser_Role(String role);
 
 //	@Query(value="select * from offering o left outer join user u on o.user=u.id where u.role=?1", nativeQuery=true)
