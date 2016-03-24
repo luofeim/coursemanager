@@ -4,8 +4,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 
 @Entity
+@NamedQuery(name = "User.findByLastnameNotLike",
+	query = "select u from User u where u.lastname = ?1")
 public class User {
 
 	@Id

@@ -95,4 +95,25 @@ public class UserIntegrationTest {
 		
 	}
 	
+	@Test
+	public void testNamedSql() {
+		user = setUser("susan", "lu", "susanlu@kehwa.net", "ROLE_ADMIN");
+		userRepository.saveAndFlush(user);
+		user = setUser("david", "luo", "davidluo@kehwa.net", "ROLE_USER");
+		userRepository.saveAndFlush(user);
+		
+		List<User> users = userRepository.findByLastnameLike("luo");
+		printResults(users);
+		
+		users = userRepository.findByLastnameNotLike("luo");
+		printResults(users);
+
+		users = userRepository.findByLastname("luo");
+		printResults(users);
+		
+		userRepository.setFixedFirstnameFor("god", "luo");
+		users = userRepository.findByLastname("luo");
+		printResults(users);
+	}
+	
 }
