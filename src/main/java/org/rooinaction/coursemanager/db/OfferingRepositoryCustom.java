@@ -10,4 +10,8 @@ public interface OfferingRepositoryCustom {
 
 	public List<Offering> customFetchBySubQuery(String role);
 
+	public List<Offering> findOfferingBySecurityRole(String locationName);
+
+	public List<Offering> findOfferingBySecurityRole2(String locationName);
+
 }

@@ -19,7 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long>, QueryDslPredi
 	@Query("select u from User u where u.lastname = :lastname")
 	List<User> findByLastname(@Param("lastname") String lastname);
 	
-	@Modifying(clearAutomatically=true)
+//	@Modifying(clearAutomatically=true)
+	@Modifying
 	@Query("update User u set u.firstname = ?1 where u.lastname = ?2")
 	int setFixedFirstnameFor(String firstname, String lastname);
 }

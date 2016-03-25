@@ -5,6 +5,10 @@ import static org.hamcrest.CoreMatchers.is;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.hibernate.annotations.FlushModeType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +30,7 @@ public class UserIntegrationTest {
 	UserRepository userRepository;
 
 	User user = new User();
-
+	
 	public User setUser(String firstname, String lastname, String email, String role) {
 		User user = new User();
 		user.setFirstname(firstname);
@@ -95,6 +99,9 @@ public class UserIntegrationTest {
 		
 	}
 	
+	@PersistenceContext
+	private EntityManager em;
+	
 	@Test
 	public void testNamedSql() {
 		user = setUser("susan", "lu", "susanlu@kehwa.net", "ROLE_ADMIN");
@@ -112,6 +119,9 @@ public class UserIntegrationTest {
 		printResults(users);
 		
 		userRepository.setFixedFirstnameFor("god", "luo");
+		userRepository.flush();
+		em.clear();
+
 		users = userRepository.findByLastname("luo");
 		printResults(users);
 	}
