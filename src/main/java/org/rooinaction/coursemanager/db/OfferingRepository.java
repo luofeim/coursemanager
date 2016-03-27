@@ -17,5 +17,11 @@ public interface OfferingRepository extends OfferingRepositoryCustom {
  * spring security 4.0以上才支持org.springframework.security.data.repository.query.SecurityEvaluationContextExtension
 	@Query(value="select o from Offering o where o.user.role=?1 or 1=?#{hasRole('ROLE_ADMIN') ? 1 : 0}", nativeQuery=false)
 	List<Offering> fetchByUser_Role_Security(String role);
-*/	
+*/
+	
+	@Query("select o from Offering o")
+	List<Offering> findThat();
+	
+	@Query("select o from Offering o where o.locationName like ?1%")
+	List<Offering> findThat(String locationName);
 }

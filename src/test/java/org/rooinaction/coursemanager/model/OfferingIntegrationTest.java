@@ -96,63 +96,10 @@ public class OfferingIntegrationTest {
 	}
 	
 	@Test
-	public void testSecuritySqlFilter() {
-		Offering offeringData;
-		offeringData = prepareOffering("ray", "luo", "luofeim@kehwa.net", "ROLE_ADMIN", 3);
-		User user = offeringData.getUser();
-		Offering newOffering = dod.getSpecificOffering(5);
-		newOffering.setUser(user);
-		offeringRepository.saveAndFlush(newOffering);
-		UsernamePasswordAuthenticationToken rayAuth = new UsernamePasswordAuthenticationToken(user, "x", 	
-			singleton(new SimpleGrantedAuthority("admin")));
-
-		offeringData = prepareOffering("david", "luo", "davidluo@kehwa.net", "ROLE_USER", 7);
-		user = offeringData.getUser();
-		newOffering = dod.getSpecificOffering(9);
-		newOffering.setUser(user);
-		offeringRepository.saveAndFlush(newOffering);
-		UsernamePasswordAuthenticationToken davidAuth = new UsernamePasswordAuthenticationToken(user, "x",
-				singleton(new SimpleGrantedAuthority("user")));
-
-		String locationName = "locationName".substring(0, 1);
-		List<Offering> offerings;
-
-		//测试jpa native sql
-		//测试未登录
-		SecurityContextHolder.getContext().setAuthentication(null);
-		offerings = offeringRepository.findOfferingBySecurityRole(locationName);
-		printOfferingForDebug(offerings);
-//		Assert.assertThat(offerings.size(), is(2));
-
-		//测试ROLE_USER
-		SecurityContextHolder.getContext().setAuthentication(davidAuth);
-		offerings = offeringRepository.findOfferingBySecurityRole(locationName);
-		printOfferingForDebug(offerings);
-//		Assert.assertThat(offerings.size(), is(2));
-		
-		//测试ROLE_ADMIN
-		SecurityContextHolder.getContext().setAuthentication(rayAuth);
-		offerings = offeringRepository.findOfferingBySecurityRole(locationName);
-		printOfferingForDebug(offerings);
-//		Assert.assertThat(offerings.size(), is(2));
-		
-		//测试jpa
-		//测试未登录
-		SecurityContextHolder.getContext().setAuthentication(null);
-		offerings = offeringRepository.findOfferingBySecurityRole2(locationName);
-		printOfferingForDebug(offerings);
-//		Assert.assertThat(offerings.size(), is(2));
-
-		//测试ROLE_USER
-		SecurityContextHolder.getContext().setAuthentication(davidAuth);
-		offerings = offeringRepository.findOfferingBySecurityRole2(locationName);
-		printOfferingForDebug(offerings);
-//		Assert.assertThat(offerings.size(), is(2));
-		
-		//测试ROLE_ADMIN
-		SecurityContextHolder.getContext().setAuthentication(rayAuth);
-		offerings = offeringRepository.findOfferingBySecurityRole2(locationName);
-		printOfferingForDebug(offerings);
-//		Assert.assertThat(offerings.size(), is(2));
+	public void testAspectJ() {
+		Offering offering = dod.getRandomOffering();
+//		List<Offering> offerings = offeringRepository.findThat();
+		List<Offering> offerings = offeringRepository.findThat(offering.getLocationName().substring(0,8));
+		Assert.assertThat(offerings == null ? 0 : offerings.size(), equalTo(10));
 	}
 }
