@@ -14,6 +14,5 @@ privileged aspect CourseService_Roo_Service {
     public abstract Course CourseService.findCourse(Long id);    
     public abstract List<Course> CourseService.findAllCourses();    
     public abstract List<Course> CourseService.findCourseEntries(int firstResult, int maxResults);    
-    public abstract void CourseService.saveCourse(Course course);    
     public abstract Course CourseService.updateCourse(Course course);    
 }
